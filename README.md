@@ -2,7 +2,7 @@
 
 A side-by-side comparison of three AI document-Q&A paradigms — **traditional RAG**, **Agentic Search**, and **GraphRAG** — answering the same questions against the same corpus, so the trade-offs are visible instead of hand-waved.
 
-> **Status:** 🚧 Early scaffolding. See the milestone checklist below.
+> **Status:** 🚧 M1 complete — RAG baseline runs end-to-end. M2 (Agentic) in progress. See milestone checklist below.
 
 ## Why
 
@@ -59,8 +59,8 @@ All three share the same generator model (Gemini Flash Lite) and the same source
 
 ## Milestone progress
 
-- [ ] **M1** — Infrastructure + RAG baseline (project skeleton, `rag_graph`, 5 single-hop questions passing)
-- [ ] **M2** — Agentic search adaptation (port from `chat-langchain`'s `docs_graph`, multi-hop / cross-doc questions passing)
+- [x] **M1** — Infrastructure + RAG baseline (project skeleton, `rag_graph` runs end-to-end against all 5 single-hop questions; full per-question report in `evaluation/results/rag_single_hop.json` locally)
+- [ ] **M2** — Agentic search (`agentic_graph` with two retrieval tools, multi-hop / cross-doc questions passing)
 - [ ] **M3** — GraphRAG (knowledge-graph build, `graphrag_graph`, full 20-question coverage)
 - [ ] **M4** — Evaluation + demo (run all questions, score, generate decision matrix, demo rehearsal)
 
