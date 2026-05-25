@@ -11,11 +11,18 @@ backend/
 ├── pyproject.toml          uv-managed project + dependencies
 ├── .python-version         Python 3.11
 ├── scripts/
-│   └── fetch_docs.py       Clones langchain-ai/docs into raw_docs/
+│   ├── fetch_docs.py       Clones langchain-ai/docs into raw_docs/
+│   └── ingest.py           Loads → chunks → embeds → writes Chroma
 ├── raw_docs/               LangChain docs corpus (gitignored, populated
 │                           by fetch_docs.py)
+├── chroma_db/              Persistent vector store (gitignored, built
+│                           by ingest.py)
 └── qa_lab/
     ├── __init__.py
+    ├── data/
+    │   ├── __init__.py
+    │   ├── loader.py           Read .mdx files into LangChain Documents
+    │   └── ingest.py           Chunking + embedding configuration
     └── graphs/
         ├── __init__.py
         ├── rag_graph.py        Traditional RAG (stub)
@@ -59,6 +66,32 @@ uv run python scripts/fetch_docs.py
 This shallow-clones the repo into `backend/raw_docs/` (gitignored) and
 strips the `.git` directory so the corpus sits as a plain file tree.
 Re-run with `--force` to refresh.
+
+## Building the vector index
+
+Once the corpus is on disk and `OPENAI_API_KEY` is in `.env` at the
+project root, build the shared Chroma index:
+
+```bash
+uv run python scripts/ingest.py            # ingest if Chroma is empty
+uv run python scripts/ingest.py --reset    # wipe + re-ingest
+```
+
+Configuration (single source of truth in `qa_lab/data/ingest.py`):
+
+| Setting        | Value                              |
+|----------------|------------------------------------|
+| Chunk size     | 1,000 characters                   |
+| Chunk overlap  | 200 characters                     |
+| Embedding      | OpenAI `text-embedding-3-small`    |
+| Collection     | `langchain_docs`                   |
+| Persist dir    | `backend/chroma_db/` (gitignored)  |
+
+A full ingest produces ~28k chunks, takes ~10 minutes, and costs
+approximately **$0.12** in OpenAI embedding calls.
+
+After ingestion the script runs a smoke query so retrieval failures
+surface immediately.
 
 ## Running the stubs
 
