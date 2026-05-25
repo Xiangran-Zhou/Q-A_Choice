@@ -89,6 +89,7 @@ def _run_one(graph, question: dict) -> dict:
     initial_state = {
         "question": question["question_en"],
         "retrieved_chunks": [],
+        "tool_calls": [],
         "answer": "",
     }
     t0 = time.time()
@@ -107,6 +108,7 @@ def _run_one(graph, question: dict) -> dict:
         "answer": final_state.get("answer", ""),
         "retrieved_sources": _dedup_sources(chunks),
         "retrieved_count": len(chunks),
+        "tool_calls": final_state.get("tool_calls", []) or [],
         "latency_ms": latency_ms,
     }
 
@@ -128,6 +130,10 @@ def _print_result(result: dict) -> None:
         top = sources[0]
         more = f" (+{len(sources) - 1} more)" if len(sources) > 1 else ""
         print(f"  Top source: {top}{more}")
+    tool_calls = result.get("tool_calls") or []
+    if tool_calls:
+        names = [tc.get("name", "?") for tc in tool_calls]
+        print(f"  Tool calls ({len(tool_calls)}): {', '.join(names)}")
     answer = result["answer"]
     # Trim long answers for terminal readability; full text is in the JSON.
     if len(answer) > 400:
