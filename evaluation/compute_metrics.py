@@ -33,11 +33,13 @@ EMPTY_ANSWER_SENTINEL = "[agent ended without producing a final answer]"
 
 
 def _load_reports() -> dict[tuple[str, str], dict]:
-    """Return `{(paradigm, dimension): report}` for every results file."""
+    """Return `{(paradigm, dimension): report}` for the un-scored runs."""
     out: dict[tuple[str, str], dict] = {}
     if not RESULTS_DIR.exists():
         return out
     for path in sorted(RESULTS_DIR.glob("*.json")):
+        if path.name.startswith("scored_"):
+            continue
         try:
             data = json.loads(path.read_text())
         except (OSError, json.JSONDecodeError):
@@ -47,6 +49,40 @@ def _load_reports() -> dict[tuple[str, str], dict]:
         if p in PARADIGMS and d in DIMENSIONS:
             out[(p, d)] = data
     return out
+
+
+def _load_scored_reports() -> dict[tuple[str, str], dict]:
+    """Return `{(paradigm, dimension): scored_report}` from scored_*.json."""
+    out: dict[tuple[str, str], dict] = {}
+    if not RESULTS_DIR.exists():
+        return out
+    for path in sorted(RESULTS_DIR.glob("scored_*.json")):
+        try:
+            data = json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError):
+            continue
+        p = data.get("paradigm")
+        d = data.get("dimension")
+        if p in PARADIGMS and d in DIMENSIONS:
+            out[(p, d)] = data
+    return out
+
+
+def _summarize_scores(report: dict) -> dict:
+    """Score stats from a scored_*.json report."""
+    scores: list[int] = []
+    for r in report.get("results", []):
+        s = r.get("judge", {}).get("score")
+        if isinstance(s, int):
+            scores.append(s)
+    if not scores:
+        return {"n_scored": 0, "score_mean": None, "score_total": 0, "max_possible": 0}
+    return {
+        "n_scored": len(scores),
+        "score_mean": round(mean(scores), 2),
+        "score_total": sum(scores),
+        "max_possible": 3 * len(scores),
+    }
 
 
 def _summarize(report: dict) -> dict:
@@ -94,7 +130,8 @@ def _fmt_cell(stats: dict | None) -> tuple[str, str, str, str]:
 
 def main() -> int:
     reports = _load_reports()
-    if not reports:
+    scored = _load_scored_reports()
+    if not reports and not scored:
         print(
             f"No reports found in {RESULTS_DIR}. "
             f"Run evaluation/run_one_paradigm.py first.",
@@ -102,10 +139,13 @@ def main() -> int:
         )
         return 1
 
-    print(f"# Evaluation metrics\n\nSource: `{RESULTS_DIR.relative_to(Path.cwd().parent) if RESULTS_DIR.is_relative_to(Path.cwd().parent) else RESULTS_DIR}`\n")
+    print("# Evaluation metrics\n")
+    print(f"Source: `{RESULTS_DIR}`\n")
 
+    # --- Operational metrics ---
+    print("## Operational metrics (un-scored runs)\n")
     for paradigm in PARADIGMS:
-        print(f"## {paradigm}\n")
+        print(f"### {paradigm}\n")
         print("| Dimension   | N | Latency mean | Tool calls mean | Success rate |")
         print("|-------------|---|--------------|-----------------|--------------|")
         for dim in DIMENSIONS:
@@ -114,6 +154,59 @@ def main() -> int:
             n, lat, tc, success = _fmt_cell(stats)
             print(f"| {dim:11s} | {n} | {lat} | {tc} | {success} |")
         print()
+
+    # --- Quality scores from LLM-as-judge ---
+    if scored:
+        print("## Quality scores (LLM-as-judge, 0-3)\n")
+        for paradigm in PARADIGMS:
+            print(f"### {paradigm}\n")
+            print("| Dimension   | N | Score mean | Score total | Max possible |")
+            print("|-------------|---|------------|-------------|--------------|")
+            for dim in DIMENSIONS:
+                report = scored.get((paradigm, dim))
+                if not report:
+                    print(f"| {dim:11s} | – | – | – | – |")
+                    continue
+                s = _summarize_scores(report)
+                mean_str = f"{s['score_mean']:.2f}" if s["score_mean"] is not None else "–"
+                print(
+                    f"| {dim:11s} | {s['n_scored']} | {mean_str} | "
+                    f"{s['score_total']} | {s['max_possible']} |"
+                )
+            print()
+
+        # --- Aggregate matrix ---
+        print("## Aggregate score matrix\n")
+        print("| Paradigm | Single-hop | Multi-hop | Cross-doc | Overall |")
+        print("|----------|-----------:|----------:|----------:|--------:|")
+        for paradigm in PARADIGMS:
+            cells: list[str] = []
+            paradigm_total = 0
+            paradigm_max = 0
+            for dim in DIMENSIONS:
+                report = scored.get((paradigm, dim))
+                if not report:
+                    cells.append("–")
+                    continue
+                s = _summarize_scores(report)
+                if s["n_scored"] == 0:
+                    cells.append("–")
+                    continue
+                cells.append(f"{s['score_total']}/{s['max_possible']}")
+                paradigm_total += s["score_total"]
+                paradigm_max += s["max_possible"]
+            overall = (
+                f"{paradigm_total}/{paradigm_max}"
+                if paradigm_max
+                else "–"
+            )
+            print(f"| {paradigm:8s} | {cells[0]:>10s} | {cells[1]:>9s} | {cells[2]:>9s} | {overall:>7s} |")
+        print()
+    else:
+        print(
+            "## Quality scores\n\n"
+            "No scored reports yet. Run `evaluation/judge.py --all` to score.\n"
+        )
 
     return 0
 

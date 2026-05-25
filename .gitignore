@@ -134,7 +134,10 @@ data/processed/
 langsmith_cache/
 
 # ===== Evaluation outputs =====
-evaluation/results/
+# Un-scored run outputs are transient and regenerable; scored reports
+# are kept as the public audit trail for LLM-as-judge methodology.
+evaluation/results/*
+!evaluation/results/scored_*.json
 evaluation/results.json
 evaluation/runs/
 evaluation/*.log

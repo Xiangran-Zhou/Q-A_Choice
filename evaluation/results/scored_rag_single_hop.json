@@ -1,0 +1,169 @@
+{
+  "paradigm": "rag",
+  "dimension": "single_hop",
+  "run_at": "2026-05-25T02:30:50.920190+00:00",
+  "model": "gemini-2.5-flash",
+  "embedding_model": "text-embedding-3-small",
+  "n_questions": 5,
+  "n_succeeded": 5,
+  "n_failed": 0,
+  "results": [
+    {
+      "id": "1.1",
+      "dimension": "single_hop",
+      "question_zh": "ChatOpenAI 的 temperature 参数默认值是多少？",
+      "question_en": "What is the default value of the temperature parameter in ChatOpenAI?",
+      "expected_winner": "rag",
+      "source_hint": "langchain-openai package reference",
+      "is_demo_star": false,
+      "answer": "The provided context does not explicitly state the default value of the `temperature` parameter in `ChatOpenAI` when it is not specified during instantiation.\n\nHowever, examples show `ChatOpenAI` being instantiated with `temperature: 0` [1, 7]. Another example shows `init_chat_model` (for OpenAI) being instantiated with `temperature=0.5` [5]. For `ChatContextual`, the default `temperature` is `0` [2].",
+      "retrieved_sources": [
+        "src/oss/javascript/integrations/tools/searchapi.mdx",
+        "src/oss/python/integrations/chat/contextual.mdx",
+        "src/langsmith/playground-model-providers.mdx",
+        "src/langsmith/agent-server-scale.mdx",
+        "src/oss/langchain/quickstart.mdx",
+        "src/oss/javascript/integrations/embeddings/azure_openai.mdx",
+        "src/oss/javascript/integrations/tools/jigsawstack.mdx",
+        "src/oss/langgraph/functional-api.mdx",
+        "src/oss/langchain/streaming.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 5633,
+      "judge": {
+        "score": 1,
+        "reasoning": "The candidate fails to answer the question and incorrectly presents examples of explicitly set `temperature` values as evidence for a default. It also cites information about an irrelevant class (`ChatContextual`) and misrepresents the content of one of its sources (`quickstart.mdx`).",
+        "verified_sources": [
+          "src/oss/python/integrations/chat/contextual.mdx",
+          "src/oss/langchain/quickstart.mdx"
+        ],
+        "elapsed_ms": 24026
+      }
+    },
+    {
+      "id": "1.2",
+      "dimension": "single_hop",
+      "question_zh": "RecursiveCharacterTextSplitter 的默认 chunk_size 是多少？",
+      "question_en": "What is the default chunk_size of RecursiveCharacterTextSplitter?",
+      "expected_winner": "rag",
+      "source_hint": "text_splitters reference",
+      "is_demo_star": false,
+      "answer": "The provided context does not contain information about the default `chunk_size` of `RecursiveCharacterTextSplitter`.",
+      "retrieved_sources": [
+        "src/oss/integrations/splitters/index.mdx",
+        "src/langsmith/local.mdx",
+        "src/oss/integrations/splitters/recursive_text_splitter.mdx",
+        "src/langsmith/pricing-faq.mdx",
+        "src/oss/python/integrations/splitters/split_html.mdx",
+        "src/oss/python/integrations/splitters/markdown_header_metadata_splitter.mdx",
+        "src/oss/integrations/splitters/split_by_token.mdx",
+        "src/oss/python/integrations/llms/google_vertex_ai.mdx",
+        "src/oss/langchain/context-engineering.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 3909,
+      "judge": {
+        "score": 2,
+        "reasoning": "The candidate correctly states that the answer is not in the provided context. The most relevant retrieved document explains the `chunk_size` parameter but does not specify its default value.",
+        "verified_sources": [
+          "src/oss/integrations/splitters/recursive_text_splitter.mdx"
+        ],
+        "elapsed_ms": 15876
+      }
+    },
+    {
+      "id": "1.3",
+      "dimension": "single_hop",
+      "question_zh": "LangSmith 的免费 plan 每月有多少 traces 额度？",
+      "question_en": "How many traces does the LangSmith free plan include per month?",
+      "expected_winner": "tie",
+      "source_hint": "LangSmith pricing page",
+      "is_demo_star": true,
+      "answer": "Personal organizations on the Developer plan are limited to 5,000 traces per month until a credit card is added. Team organizations on the Plus plan are given an initial 10,000 traces per month.\n\nSource: [7]",
+      "retrieved_sources": [
+        "src/langsmith/pricing-faq.mdx",
+        "src/langsmith/billing.mdx",
+        "src/langsmith/administration-overview.mdx",
+        "src/langsmith/view-usage.mdx"
+      ],
+      "retrieved_count": 8,
+      "tool_calls": [],
+      "latency_ms": 4994,
+      "judge": {
+        "score": 3,
+        "reasoning": "The candidate answer is fully correct. It accurately states the 5,000 trace limit for the free personal/developer plan and the 10,000 initial traces for the Plus plan, both of which are confirmed in the documentation.",
+        "verified_sources": [
+          "src/langsmith/pricing-faq.mdx",
+          "src/langsmith/billing.mdx"
+        ],
+        "elapsed_ms": 26721
+      }
+    },
+    {
+      "id": "1.4",
+      "dimension": "single_hop",
+      "question_zh": "BaseChatMessageHistory 类有哪些必须实现的抽象方法？",
+      "question_en": "What abstract methods must be implemented when subclassing BaseChatMessageHistory?",
+      "expected_winner": "rag",
+      "source_hint": "core/chat_history reference",
+      "is_demo_star": false,
+      "answer": "The provided context does not contain information about the abstract methods that must be implemented when subclassing `BaseChatMessageHistory`.",
+      "retrieved_sources": [
+        "src/oss/javascript/migrate/langchain-v1.mdx",
+        "src/oss/python/integrations/chat/databricks.mdx",
+        "src/oss/langchain/messages.mdx",
+        "src/oss/python/integrations/embeddings/openai.mdx",
+        "src/oss/python/integrations/chat_message_histories/cockroachdb.mdx",
+        "src/oss/python/integrations/embeddings/databricks.mdx",
+        "src/oss/python/integrations/graphs/amazon_neptune_open_cypher.mdx",
+        "src/oss/python/integrations/chat/openai.mdx",
+        "src/oss/contributing/implement-langchain.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 3478,
+      "judge": {
+        "score": 1,
+        "reasoning": "The candidate incorrectly claimed the information was not available. The documentation for concrete implementations of `BaseChatMessageHistory` (like CockroachDB) clearly shows the methods that need to be implemented, such as `add_messages` and `clear`. The agent failed to find this information.",
+        "verified_sources": [
+          "src/oss/python/integrations/chat_message_histories/cockroachdb.mdx"
+        ],
+        "elapsed_ms": 34938
+      }
+    },
+    {
+      "id": "1.5",
+      "dimension": "single_hop",
+      "question_zh": "LangGraph 的 interrupt 函数在哪个版本引入？",
+      "question_en": "In which version of LangGraph was the interrupt function introduced?",
+      "expected_winner": "agentic",
+      "source_hint": "LangGraph changelog + interrupt docs",
+      "is_demo_star": true,
+      "answer": "The provided context does not explicitly state the exact version of LangGraph in which the `interrupt` function was introduced. However, it does show examples of `v0 (old)` code utilizing `runtime.interrupt.approve`, indicating that interrupt functionality was available in LangGraph v0 [5].",
+      "retrieved_sources": [
+        "src/oss/langgraph/interrupts.mdx",
+        "src/oss/langgraph/studio.mdx",
+        "src/oss/javascript/migrate/langgraph-v1.mdx",
+        "src/oss/langgraph/functional-api.mdx",
+        "src/oss/python/integrations/vectorstores/weaviate.mdx",
+        "src/oss/versioning.mdx"
+      ],
+      "retrieved_count": 9,
+      "tool_calls": [],
+      "latency_ms": 6354,
+      "judge": {
+        "score": 1,
+        "reasoning": "The candidate correctly notes that the specific version is not in the context, but it fabricates evidence by claiming that the `versioning.mdx` source contains a `v0 (old)` code example, which it does not.",
+        "verified_sources": [
+          "src/oss/langgraph/interrupts.mdx",
+          "src/oss/versioning.mdx"
+        ],
+        "elapsed_ms": 22843
+      }
+    }
+  ],
+  "scored_at": "2026-05-25T03:04:56Z",
+  "judge_model": "gemini-2.5-pro"
+}

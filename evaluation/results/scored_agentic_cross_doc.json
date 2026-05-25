@@ -1,0 +1,206 @@
+{
+  "paradigm": "agentic",
+  "dimension": "cross_doc",
+  "run_at": "2026-05-25T02:36:07.338593+00:00",
+  "model": "gemini-2.5-flash",
+  "embedding_model": "text-embedding-3-small",
+  "n_questions": 5,
+  "n_succeeded": 5,
+  "n_failed": 0,
+  "results": [
+    {
+      "id": "3.1",
+      "dimension": "cross_doc",
+      "question_zh": "AgentExecutor（旧）和 LangGraph 的 agent（新）在功能上有什么差异？我应该选哪个？",
+      "question_en": "What are the differences between AgentExecutor (legacy) and LangGraph's agent (new)? Which should I choose?",
+      "expected_winner": "agentic",
+      "source_hint": "Legacy AgentExecutor + LangGraph agents + migration guide",
+      "is_demo_star": true,
+      "answer": "LangGraph is the newer, more powerful, and recommended framework for building agents, especially for complex and stateful applications, while `AgentExecutor` is considered a legacy component.\n\nHere's a breakdown of the differences and guidance on which to choose:\n\n**AgentExecutor (Legacy)**\n\n*   **Higher-level Abstraction:** `AgentExecutor` provides a more abstracted way to define agents. It's simpler to get started with for generic tasks (src/langsmith/faq.mdx).\n*   **Less Control:** It offers less fine-grained control over the agent's execution flow and state management.\n*   **Legacy Status:** The code for `AgentExecutor` has been moved to `@langchain/classic` in JavaScript, indicating its legacy status (src/oss/javascript/migrate/langchain-v1.mdx). You might see it used in older examples or for very basic agent implementations (src/oss/python/integrations/tools/bodo.mdx, src/oss/python/integrations/splitters/split_html.mdx).\n\n**LangGraph (New)**\n\n*   **Low-level Orchestration Framework:** LangGraph is a low-level framework designed for building, managing, and deploying long-running, stateful agents (src/oss/concepts/products.mdx, src/oss/langgraph/overview.mdx).\n*   **Fine-grained Control:** It provides explicit, fine-grained control over agent orchestration, allowing you to define complex, custom cognitive architectures (src/oss/concepts/products.mdx, src/langsmith/faq.mdx).\n*   **Stateful and Durable Execution:** LangGraph is built for durable execution and managing state across multiple steps, which is crucial for long-running and complex tasks (src/oss/concepts/products.mdx).\n*   **Foundation for LangChain 1.0:** LangChain 1.0 is built on top of LangGraph, making it the underlying engine for modern LangChain agents (src/oss/concepts/products.mdx).\n*   **Designed for Complexity:** It excels in scenarios requiring bespoke solutions and handling complex tasks that generic agent frameworks might struggle with (src/langsmith/faq.mdx).\n*   **Streaming Workflows:** LangGraph is designed with streaming workflows in mind and adds no overhead to your code (src/langsmith/faq.mdx).\n\n**Which should you choose?**\n\n*   **Choose LangGraph** for new projects, especially if you need:\n    *   Fine-grained control over agent logic and execution.\n    *   To build complex, stateful, and long-running agents.\n    *   Durable execution for your agent workflows.\n    *   To design custom cognitive architectures.\n    *   To leverage the latest advancements in LangChain's agent capabilities.\n*   **Avoid `AgentExecutor`** for new development. It's primarily for maintaining existing codebases that use it or for very simple, generic agent tasks where its limitations are not an issue. For any serious agent development, LangGraph is the superior choice.",
+      "retrieved_sources": [],
+      "retrieved_count": 0,
+      "tool_calls": [
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "AgentExecutor legacy vs LangGraph agent"
+          }
+        }
+      ],
+      "latency_ms": 9363,
+      "judge": {
+        "score": 3,
+        "reasoning": "The answer correctly identifies LangGraph as the modern, low-level, and powerful choice for agent building, while correctly characterizing AgentExecutor as a legacy, higher-level abstraction. The claims are well-supported by the provided documentation.",
+        "verified_sources": [
+          "src/langsmith/faq.mdx",
+          "src/oss/javascript/migrate/langchain-v1.mdx",
+          "src/oss/python/integrations/tools/bodo.mdx",
+          "src/oss/concepts/products.mdx",
+          "src/oss/langgraph/overview.mdx"
+        ],
+        "elapsed_ms": 28281
+      }
+    },
+    {
+      "id": "3.2",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 支持哪些向量数据库？哪个最适合生产环境？",
+      "question_en": "What vector databases does LangChain support? Which is best for production?",
+      "expected_winner": "agentic",
+      "source_hint": "integrations/vectorstores (multiple pages)",
+      "is_demo_star": false,
+      "answer": "LangChain supports a wide variety of vector databases and integrations. Some of the supported vector stores include:\n\n*   **IBM Db2** (src/oss/python/integrations/vectorstores/db2.mdx)\n*   **SQL Server** (src/oss/python/integrations/vectorstores/sqlserver.mdx)\n*   **Couchbase** (src/oss/python/integrations/providers/couchbase.mdx)\n    *   Offers `CouchbaseSearchVectorStore` for hybrid searches (vector similarity with Full-Text Search and geospatial) and `CouchbaseQueryVectorStore` for Hyperscale Vector Index.\n*   **Google Vertex AI Matching Engine** (src/oss/javascript/integrations/vectorstores/googlevertexai.mdx)\n    *   Described as providing \"the industry's leading high-scale low latency vector database.\"\n*   **Voy** (src/oss/javascript/integrations/vectorstores/voy.mdx)\n    *   A WASM vector similarity search engine written in Rust, supported in non-Node environments like browsers.\n*   **Amazon DocumentDB** (src/oss/python/integrations/vectorstores/documentdb.mdx)\n*   **Databricks Vector Search** (src/oss/python/integrations/providers/databricks.mdx)\n\nRegarding which vector database is \"best for production,\" the LangChain documentation does not explicitly recommend a single \"best\" option. The optimal choice often depends on specific use cases, existing infrastructure, performance requirements, and scalability needs. However, some integrations highlight features that are generally desirable in production environments:\n\n*   **Google Vertex AI Matching Engine** is noted for its \"high-scale low latency\" capabilities, which are crucial for production systems requiring fast and efficient vector similarity searches (src/oss/javascript/integrations/vectorstores/googlevertexai.mdx).\n*   **Couchbase** offers different implementations tailored for specific needs, such as hybrid searches, which can be beneficial in complex production scenarios (src/oss/python/integrations/providers/couchbase.mdx).\n*   **MCP Toolbox for Databases** is mentioned as being \"designed with enterprise-grade and production-quality in mind,\" handling complexities like connection pooling and authentication (src/oss/python/integrations/tools/mcp_toolbox.mdx). While not a vector store itself, it provides tools for integrating databases with LangChain agents in a production-ready manner.\n\nUltimately, the \"best\" choice for production will depend on your specific requirements and existing technology stack.",
+      "retrieved_sources": [],
+      "retrieved_count": 0,
+      "tool_calls": [
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "LangChain supported vector databases"
+          }
+        }
+      ],
+      "latency_ms": 5946,
+      "judge": {
+        "score": 3,
+        "reasoning": "The answer correctly lists several supported vector databases and accurately describes their features. It correctly states that the documentation does not name a single \"best\" option for production and instead highlights features from several integrations that are relevant to production use cases. All specific claims and source citations were verified and found to be accurate.",
+        "verified_sources": [
+          "src/oss/python/integrations/vectorstores/db2.mdx",
+          "src/oss/python/integrations/vectorstores/sqlserver.mdx",
+          "src/oss/python/integrations/providers/couchbase.mdx",
+          "src/oss/javascript/integrations/vectorstores/googlevertexai.mdx",
+          "src/oss/javascript/integrations/vectorstores/voy.mdx",
+          "src/oss/python/integrations/vectorstores/documentdb.mdx",
+          "src/oss/python/integrations/providers/databricks.mdx",
+          "src/oss/python/integrations/tools/mcp_toolbox.mdx"
+        ],
+        "elapsed_ms": 29781
+      }
+    },
+    {
+      "id": "3.3",
+      "dimension": "cross_doc",
+      "question_zh": "我想做一个能联网搜索的 agent，LangChain 和 LangGraph 各自怎么做？哪个更好？",
+      "question_en": "I want to build an agent that searches the web. How does LangChain vs LangGraph approach this? Which is better?",
+      "expected_winner": "agentic",
+      "source_hint": "LangChain agents + LangGraph + Tavily/Serper integrations",
+      "is_demo_star": false,
+      "answer": "Both LangChain and LangGraph provide ways to build agents that can search the web, but they approach it with different levels of abstraction and control, making one potentially \"better\" depending on the complexity of your desired agent.\n\n**LangChain's Approach:**\nLangChain offers a more direct and often simpler way to integrate web search capabilities into agents. It provides numerous integrations with various web search tools and APIs, such as You.com (src/oss/python/integrations/tools/you.mdx), Searxng (src/oss/javascript/integrations/tools/searxng.mdx), SerpAPI (src/oss/javascript/integrations/document_loaders/web_loaders/serpapi.mdx), OpenAI's built-in web search tool (src/oss/javascript/integrations/tools/openai.mdx), Parallel (src/oss/python/integrations/tools/parallel_extract.mdx), SearchAPI (src/oss/javascript/integrations/tools/searchapi.mdx), and Nimble (src/oss/python/integrations/providers/nimble.mdx). You can easily incorporate these tools into a LangChain agent using functions like `create_openai_functions_agent` (src/oss/python/integrations/tools/you.mdx). LangChain agents are generally easier to get started with for straightforward use cases (src/oss/learn.mdx).\n\n**LangGraph's Approach:**\nLangGraph is a lower-level orchestration framework designed for building, managing, and deploying long-running, stateful agents that handle complex tasks (src/oss/langgraph/overview.mdx). While it also supports integrating web search tools like `PerplexitySearchResults` (src/oss/python/integrations/tools/perplexity_search.mdx) and `NimbleSearchTool` (src/oss/python/integrations/tools/nimble_search.mdx), its strength lies in enabling more intricate, multi-step reasoning and decision-making processes. For example, you can build a multi-step web research agent from scratch using LangGraph, allowing the agent to plan research, delegate tasks to sub-agents, assess search results, and synthesize findings into a comprehensive report (src/oss/deepagents/deep-research.mdx).\n\n**Which is Better?**\n\n*   **For simple web searching agents or quick lookups:** LangChain is generally \"better\" due to its ease of use and direct integrations. If your agent primarily needs to perform a search query and use the results, LangChain's agent implementations are a good starting point.\n*   **For complex, multi-step, or stateful web research agents:** LangGraph is \"better.\" If you need an agent that can engage in deep research, make decisions based on search results, refine queries, handle multiple turns of interaction, or manage internal state throughout a research process, LangGraph provides the necessary control and orchestration capabilities. It's ideal for scenarios where the agent's behavior needs to be more dynamic and adaptive.",
+      "retrieved_sources": [],
+      "retrieved_count": 0,
+      "tool_calls": [
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "LangChain web search agent"
+          }
+        },
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "LangGraph web search agent"
+          }
+        }
+      ],
+      "latency_ms": 10614,
+      "judge": {
+        "score": 3,
+        "reasoning": "The answer correctly and completely distinguishes between LangChain and LangGraph for building web search agents. It accurately characterizes LangChain as the higher-level, easier-to-start framework and LangGraph as the lower-level, more flexible framework for complex, stateful agents. The claims are supported by specific, accurate citations that I verified.",
+        "verified_sources": [
+          "src/oss/langgraph/overview.mdx",
+          "src/oss/deepagents/deep-research.mdx",
+          "src/oss/python/integrations/tools/you.mdx",
+          "src/oss/learn.mdx"
+        ],
+        "elapsed_ms": 15473
+      }
+    },
+    {
+      "id": "3.4",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 的 Document Loaders 和 Retrievers 各自能做什么？它们怎么配合？",
+      "question_en": "What do LangChain's Document Loaders and Retrievers each do? How do they work together?",
+      "expected_winner": "tie",
+      "source_hint": "Document loaders + Retrievers modules",
+      "is_demo_star": true,
+      "answer": "LangChain's Document Loaders and Retrievers play distinct yet complementary roles in building applications, particularly in Retrieval Augmented Generation (RAG) pipelines.\n\n**Document Loaders** are responsible for ingesting data from a wide variety of sources and formats. They convert raw data, such as text files, web pages, PDFs, CSVs, or JSON files, into a standardized format: a list of `Document` objects. Each `Document` typically contains the `pageContent` (the actual text or data) and `metadata` (additional information about the document, like its source or creation date). LangChain offers numerous integrations for different file types and data sources, allowing you to load data from almost anywhere (src/oss/javascript/integrations/document_loaders/index.mdx, src/oss/python/integrations/document_loaders/index.mdx).\n\n**Retrievers** are an interface designed to fetch relevant `Document` objects given an unstructured query, such as a user's question. Unlike Document Loaders, Retrievers do not necessarily store documents themselves; their primary function is to retrieve them from an existing knowledge base. While they can be built on various data sources, a common implementation involves using a vector store. In this setup, documents are embedded (converted into numerical representations) and stored, and the Retriever then finds documents whose embeddings are semantically similar to the query's embedding (src/oss/javascript/integrations/retrievers/index.mdx, src/oss/python/integrations/retrievers/index.mdx).\n\n**How they work together:**\n\nIn a typical RAG pipeline, Document Loaders and Retrievers work in sequence:\n\n1.  **Data Ingestion (Document Loaders):** First, Document Loaders are used to load your raw data from its original source. This data is transformed into `Document` objects.\n2.  **Indexing and Storage:** These `Document` objects are then often processed further (e.g., split into smaller, manageable chunks) and subsequently indexed and stored in a knowledge base, most commonly a vector store.\n3.  **Information Retrieval (Retrievers):** When a user poses a query, the Retriever steps in. It takes the user's query, processes it (e.g., by embedding it), and then searches the indexed knowledge base (like the vector store) to find the most relevant `Document` chunks.\n4.  **Contextual Generation:** Finally, these retrieved `Document` chunks are passed as context to a Large Language Model (LLM). This allows the LLM to generate a more accurate, informed, and grounded response by leveraging the specific information retrieved from your data (src/oss/python/integrations/vectorstores/teradata.mdx, src/oss/langchain/rag.mdx).\n\nIn essence, Document Loaders bring your data into the LangChain ecosystem, and Retrievers intelligently fetch the most pertinent pieces of that data when needed, enabling LLMs to provide more precise and relevant answers.",
+      "retrieved_sources": [],
+      "retrieved_count": 0,
+      "tool_calls": [
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "Document Loaders"
+          }
+        },
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "Retrievers"
+          }
+        },
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "LangChain Document Loaders Retrievers RAG pipeline"
+          }
+        }
+      ],
+      "latency_ms": 14571,
+      "judge": {
+        "score": 3,
+        "reasoning": "The candidate answer correctly and completely defines Document Loaders and Retrievers, and accurately describes how they work together in a standard RAG pipeline. All technical claims were verified against the documentation.",
+        "verified_sources": [
+          "src/oss/python/integrations/document_loaders/index.mdx",
+          "src/oss/javascript/integrations/document_loaders/index.mdx",
+          "src/oss/python/integrations/retrievers/index.mdx",
+          "src/oss/langchain/rag.mdx"
+        ],
+        "elapsed_ms": 13512
+      }
+    },
+    {
+      "id": "3.5",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 官方教程里构建 RAG 应用推荐哪种 chunking 策略？这个推荐随时间变过吗？",
+      "question_en": "What chunking strategy does the official LangChain tutorial recommend for RAG? Has this recommendation evolved over time?",
+      "expected_winner": "agentic",
+      "source_hint": "RAG tutorials + chunking strategy + historical versions",
+      "is_demo_star": false,
+      "answer": "The official LangChain documentation recommends starting with the `RecursiveCharacterTextSplitter` for most RAG use cases (src/oss/integrations/splitters/index.mdx). This splitter is suggested because it offers a good balance between maintaining context and managing chunk size, working effectively as a default strategy. It attempts to keep larger units like paragraphs intact and, if a unit exceeds the chunk size, it then moves to smaller units like sentences and words.\n\nThe documentation does not explicitly state that this recommendation has evolved over time; it presents the `RecursiveCharacterTextSplitter` as the current best practice.",
+      "retrieved_sources": [],
+      "retrieved_count": 0,
+      "tool_calls": [
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "LangChain tutorial RAG chunking strategy recommendation"
+          }
+        },
+        {
+          "name": "search_docs_vector",
+          "args": {
+            "query": "LangChain RAG document splitting tutorial best practices"
+          }
+        },
+        {
+          "name": "read_doc_file",
+          "args": {
+            "source_path": "src/oss/integrations/splitters/index.mdx"
+          }
+        }
+      ],
+      "latency_ms": 9011,
+      "judge": {
+        "score": 3,
+        "reasoning": "The answer is fully correct. It accurately identifies the recommended text splitter, explains the reasoning, and correctly notes the lack of historical context in the docs, all supported by the cited source.",
+        "verified_sources": [
+          "src/oss/integrations/splitters/index.mdx"
+        ],
+        "elapsed_ms": 17830
+      }
+    }
+  ],
+  "scored_at": "2026-05-25T02:56:15Z",
+  "judge_model": "gemini-2.5-pro"
+}

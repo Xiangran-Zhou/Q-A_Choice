@@ -1,0 +1,169 @@
+{
+  "paradigm": "rag",
+  "dimension": "multi_hop",
+  "run_at": "2026-05-25T02:37:13.941099+00:00",
+  "model": "gemini-2.5-flash",
+  "embedding_model": "text-embedding-3-small",
+  "n_questions": 5,
+  "n_succeeded": 5,
+  "n_failed": 0,
+  "results": [
+    {
+      "id": "2.1",
+      "dimension": "multi_hop",
+      "question_zh": "用 LCEL 把 RunnablePassthrough 和 ChatPromptTemplate 串起来需要注意什么？",
+      "question_en": "What should I know when chaining RunnablePassthrough with ChatPromptTemplate via LCEL?",
+      "expected_winner": "graphrag",
+      "source_hint": "LCEL + RunnablePassthrough + ChatPromptTemplate docs",
+      "is_demo_star": false,
+      "answer": "I'm sorry, but the provided context does not contain information about chaining `RunnablePassthrough` with `ChatPromptTemplate` via LCEL. Therefore, I cannot answer your question.",
+      "retrieved_sources": [
+        "src/oss/python/integrations/chat/runpod.mdx",
+        "src/langsmith/local.mdx",
+        "src/oss/python/integrations/chat/ibm_watsonx.mdx",
+        "src/oss/python/integrations/tools/vectara.mdx",
+        "src/oss/python/integrations/providers/gradientai.mdx",
+        "src/langsmith/evaluate-chatbot-tutorial.mdx",
+        "src/oss/python/integrations/llms/ollama.mdx",
+        "src/oss/javascript/integrations/tools/aiplugin-tool.mdx",
+        "src/oss/python/integrations/chat/gradientai.mdx",
+        "src/oss/python/integrations/chat/groq.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 3446,
+      "judge": {
+        "score": 1,
+        "reasoning": "The candidate incorrectly claims the context does not contain the answer. This is a fundamental LangChain Expression Language (LCEL) pattern, and the answer is readily available in the documentation, but the retrieval step failed to find the relevant documents.",
+        "verified_sources": [],
+        "elapsed_ms": 7028
+      }
+    },
+    {
+      "id": "2.2",
+      "dimension": "multi_hop",
+      "question_zh": "我想用 LangGraph 实现一个 agent，让它在调用工具失败时自动重试 3 次，需要哪些组件配合？",
+      "question_en": "I want to build a LangGraph agent that automatically retries 3 times when tool calls fail. What components do I need?",
+      "expected_winner": "graphrag",
+      "source_hint": "LangGraph + ToolNode + RetryPolicy + error handling",
+      "is_demo_star": true,
+      "answer": "To build a LangGraph agent that automatically retries tool calls 3 times when they fail, you need to use the `ToolRetryMiddleware`.\n\nThis middleware can be configured with `max_retries=3` and other parameters such as `backoff_factor`, `initial_delay`, `max_delay`, `jitter`, the specific `tools` to apply it to, the exceptions to `retry_on`, and the `on_failure` behavior.\n\nHere's an example of how to use it:\n```python\nfrom langchain.agents import create_agent\nfrom langchain.agents.middleware import ToolRetryMiddleware\n\nagent = create_agent(\n    model=\"gpt-5.4\",\n    tools=[search_tool, database_tool, api_tool],\n    middleware=[\n        ToolRetryMiddleware(\n            max_retries=3,\n            backoff_factor=2.0,\n            initial_delay=1.0,\n            max_delay=60.0,\n            jitter=True,\n            tools=[\"api_tool\"],\n            retry_on=(ConnectionError, TimeoutError),\n            on_failure=\"continue\",\n        ),\n    ],\n)\n```\n\nYou can also use it with default settings (2 retries, exponential backoff) in JavaScript:\n```typescript\nimport { createAgent, toolRetryMiddleware } from \"langchain\";\nimport { tool } from \"@langchain/core/tools\";\nimport { z } from \"zod\";\n\n// Basic usage with default settings (2 retries, exponential backoff)\nconst agent = createAgent({\n  model: \"gpt-5.4\",\n  tools: [searchTool, databaseTool],\n  middleware: [toolRetryMiddleware()],\n});\n```\n\nThis middleware handles transient failures like network timeouts and rate limits by retrying automatically.\n\nSources: [2], [6]",
+      "retrieved_sources": [
+        "src/oss/deepagents/deep-research.mdx",
+        "src/oss/langchain/middleware/built-in.mdx",
+        "src/langsmith/local.mdx",
+        "src/oss/langgraph/thinking-in-langgraph.mdx",
+        "src/oss/langgraph/overview.mdx",
+        "src/oss/deepagents/going-to-production.mdx",
+        "src/oss/python/integrations/tools/scrapeless_scraping_api.mdx",
+        "src/oss/concepts/products.mdx",
+        "src/oss/langgraph/use-subgraphs.mdx"
+      ],
+      "retrieved_count": 9,
+      "tool_calls": [],
+      "latency_ms": 6029,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer correctly describes the `ToolRetryMiddleware` feature, but this applies to standard LangChain agents created with `create_agent`. The question specifically asks about LangGraph, which has a different architecture and requires a different approach (e.g., modifying the graph with conditional edges) to implement retries.",
+        "verified_sources": [
+          "src/oss/langchain/middleware/built-in.mdx"
+        ],
+        "elapsed_ms": 20796
+      }
+    },
+    {
+      "id": "2.3",
+      "dimension": "multi_hop",
+      "question_zh": "ConversationBufferMemory 已经被废弃了，对应的新方案是什么？它和 LangGraph 的 MemorySaver 有什么关系？",
+      "question_en": "ConversationBufferMemory is deprecated. What replaces it, and how does it relate to LangGraph's MemorySaver?",
+      "expected_winner": "graphrag",
+      "source_hint": "Memory deprecation + new approach + LangGraph Memory",
+      "is_demo_star": false,
+      "answer": "The provided context does not mention `ConversationBufferMemory`, so it cannot confirm its deprecation or suggest a replacement.\n\nHowever, the context describes how memory is handled in LangGraph:\n\n*   **Short-term memory** (thread-level persistence) enables agents to track multi-turn conversations. In Python, you can add short-term memory using `InMemorySaver` as a `checkpointer` when compiling your graph. This `checkpointer` saves state to threads.\n    *   Source: [1], [5], [7]\n*   In TypeScript, `MemorySaver` is used with a `memoryStore`. The `memoryStore` works hand-in-hand with the checkpointer, allowing you to store arbitrary information for access *across* threads.\n    *   Source: [5]\n*   **Long-term memory** stores user-specific or application-level data across sessions and is shared across conversational threads. It can be recalled at any time and in any thread, scoped to custom namespaces. LangGraph provides \"stores\" for this purpose.\n    *   Source: [3], [9]",
+      "retrieved_sources": [
+        "src/oss/langgraph/add-memory.mdx",
+        "src/langsmith/llm-gateway-redaction.mdx",
+        "src/oss/concepts/memory.mdx",
+        "src/langsmith/self-host-egress.mdx",
+        "src/oss/langgraph/persistence.mdx",
+        "src/oss/deepagents/subagents.mdx",
+        "src/langsmith/prompt-template-format.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 6042,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer fails to address the first part of the question regarding the deprecation of `ConversationBufferMemory`, incorrectly stating the information is not in the context. The provided documentation source `src/oss/concepts/memory.mdx` clearly explains the deprecation and the recommended new approach. The description of LangGraph memory is mostly correct but incomplete without the context of the deprecation.",
+        "verified_sources": [
+          "src/oss/concepts/memory.mdx",
+          "src/oss/langgraph/add-memory.mdx",
+          "src/oss/langgraph/persistence.mdx"
+        ],
+        "elapsed_ms": 20982
+      }
+    },
+    {
+      "id": "2.4",
+      "dimension": "multi_hop",
+      "question_zh": "LangSmith 的 @traceable 装饰器和 LangChain 的 callbacks 系统是什么关系？",
+      "question_en": "What is the relationship between LangSmith's @traceable decorator and LangChain's callbacks system?",
+      "expected_winner": "graphrag",
+      "source_hint": "LangSmith tracing + LangChain callbacks",
+      "is_demo_star": false,
+      "answer": "LangChain objects are traced automatically when invoked within a `@traceable` function, becoming a child run of the `@traceable` function and inheriting its client, tags, metadata, and project name [1, 7].\n\nSpecifically:\n*   **For LangChain.JS:** Starting with `langchain@0.2.x`, LangChain objects are traced automatically when used inside `@traceable` functions. For older versions, you need to manually pass an instance of `LangChainTracer` created from the tracing context found in `@traceable` [1]. You can also configure a `LangChainTracer` instance to trace a specific invocation by passing it in the `callbacks` option [5].\n*   **For LangChain (Python):** LangChain objects will be traced when invoked within a `traceable` function and be bound as a child run of the `traceable` function [7]. You can also opt-in to specific invocations using `langsmith.tracing_context` [5].\n\nLangChain's tracing is done in a background thread, and you can make callbacks synchronous by setting the `LANGCHAIN_CALLBACKS_BACKGROUND` environment variable to `\"false\"`. Both Python and TypeScript LangChain expose methods like `wait_for_all_tracers()` (Python) and `awaitAllCallbacks()` (TypeScript) to ensure all traces are submitted before your application exits [9].",
+      "retrieved_sources": [
+        "src/langsmith/trace-with-langchain.mdx",
+        "src/langsmith/log-traces-to-project.mdx",
+        "src/langsmith/llm-as-judge-sdk.mdx",
+        "src/oss/langchain/context-engineering.mdx",
+        "src/langsmith/add-metadata-tags.mdx",
+        "src/oss/python/integrations/vectorstores/neo4jvector.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 7677,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer correctly identifies some mechanisms for selective tracing and background callback configuration. However, it incorrectly frames the relationship around the `@traceable` decorator, which is not the primary mechanism described in the documentation, and it hallucinates the existence of methods like `wait_for_all_tracers()`.",
+        "verified_sources": [
+          "src/langsmith/trace-with-langchain.mdx"
+        ],
+        "elapsed_ms": 19665
+      }
+    },
+    {
+      "id": "2.5",
+      "dimension": "multi_hop",
+      "question_zh": "我用 LangServe 部署了一个 chain，前端能不能直接调用？需要做什么配置？",
+      "question_en": "I deployed a chain with LangServe. Can the frontend call it directly? What configuration is needed?",
+      "expected_winner": "agentic",
+      "source_hint": "LangServe + deployment + client examples",
+      "is_demo_star": false,
+      "answer": "The provided context does not contain enough information about whether a frontend can directly call a chain deployed with LangServe or what specific configuration would be needed for such an interaction.\n\nThe context does mention that the LangSmith frontend uses Nginx to serve the UI and route API requests to the LangSmith backend, which handles CRUD API requests [3]. It also mentions deploying an app to LangSmith or a self-hosted platform and adding custom routes [7]. However, these details are specific to LangSmith's architecture and general deployment, not LangServe.",
+      "retrieved_sources": [
+        "src/oss/reference/langchain-javascript.mdx",
+        "src/langsmith/faq.mdx",
+        "src/langsmith/self-hosted.mdx",
+        "src/langsmith/local.mdx",
+        "src/oss/javascript/integrations/tools/azure_dynamic_sessions.mdx",
+        "src/langsmith/pricing-faq.mdx",
+        "src/langsmith/custom-routes.mdx",
+        "src/oss/python/integrations/tools/vectara.mdx",
+        "src/langsmith/trace-with-langgraph.mdx",
+        "src/langsmith/llm-gateway-redaction.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 5567,
+      "judge": {
+        "score": 1,
+        "reasoning": "The candidate correctly states that the provided context does not answer the question. However, the documentation does contain the answer, specifically regarding CORS configuration for LangServe. The retrieval step failed to find this crucial information, leading to a major omission.",
+        "verified_sources": [],
+        "elapsed_ms": 38912
+      }
+    }
+  ],
+  "scored_at": "2026-05-25T03:02:51Z",
+  "judge_model": "gemini-2.5-pro"
+}

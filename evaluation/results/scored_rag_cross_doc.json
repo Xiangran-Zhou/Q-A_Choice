@@ -1,0 +1,182 @@
+{
+  "paradigm": "rag",
+  "dimension": "cross_doc",
+  "run_at": "2026-05-25T02:36:43.898737+00:00",
+  "model": "gemini-2.5-flash",
+  "embedding_model": "text-embedding-3-small",
+  "n_questions": 5,
+  "n_succeeded": 5,
+  "n_failed": 0,
+  "results": [
+    {
+      "id": "3.1",
+      "dimension": "cross_doc",
+      "question_zh": "AgentExecutor（旧）和 LangGraph 的 agent（新）在功能上有什么差异？我应该选哪个？",
+      "question_en": "What are the differences between AgentExecutor (legacy) and LangGraph's agent (new)? Which should I choose?",
+      "expected_winner": "agentic",
+      "source_hint": "Legacy AgentExecutor + LangGraph agents + migration guide",
+      "is_demo_star": true,
+      "answer": "The provided context does not explicitly define \"AgentExecutor (legacy)\" or directly compare it to LangGraph's agent. However, it does provide information about LangGraph and LangChain, with LangChain 1.0 being built on top of LangGraph.\n\nBased on the context, here are the differences between LangGraph and LangChain (which would implicitly include its agent execution mechanisms like AgentExecutor):\n\n**LangGraph:**\n*   **Low-level orchestration framework and runtime:** It provides fine-grained, low-level control over agent orchestration [1, 5].\n*   **Foundation:** LangChain 1.0 is built on top of LangGraph [1, 7].\n*   **Use Cases:** Suited for complex workflows combining deterministic and agentic steps, durable execution for long-running, stateful agents, and production-ready infrastructure for agent deployment [1]. It handles companies' unique tasks without restricting users to a single black-box cognitive architecture [3].\n*   **Features:** Offers durable execution, streaming workflows, human-in-the-loop capabilities, thread-level and cross-thread persistence for state management, and comprehensive memory [5, 9].\n*   **Performance:** Will not add any overhead to your code and is specifically designed with streaming workflows in mind [3].\n*   **Open Source:** It is an MIT-licensed open-source library and is free to use [3].\n\n**LangChain (and its agent execution, e.g., AgentExecutor):**\n*   **Higher-level framework:** Agent frameworks are generally higher level and run on agent runtimes like LangGraph [1].\n*   **Use Cases:** Designed for quickly building agents and autonomous applications, providing standard abstractions for models, tools, and agent loops. It's an easy-to-use framework that still provides flexibility, suitable for straightforward agent applications without complex orchestration needs [5].\n*   **Control:** Offers maximum flexibility and control (in comparison to Deep Agents, but built on LangGraph) [7].\n\n**Which to choose:**\n*   **Choose LangGraph when:**\n    *   You need fine-grained, low-level control over agent orchestration [1, 5].\n    *   You need durable execution for long-running, stateful agents [1, 5, 9].\n    *   You're building complex workflows that combine deterministic and agentic steps [1].\n    *   You need production-ready infrastructure for agent deployment [1, 9].\n    *   You need to handle unique tasks without restricting users to a single black-box cognitive architecture [3].\n    *   You require features like human-in-the-loop oversight, comprehensive memory, and deep visibility into agent behavior [9].\n*   **Choose LangChain when:**\n    *   You want to quickly build agents and autonomous applications [5].\n    *   You need standard abstractions for models, tools, and agent loops [5].\n    *   You want an easy-to-use framework that still provides flexibility [5].\n    *   You're building straightforward agent applications without complex orchestration needs [5].\n\nSources: [1], [3], [5], [7], [9]",
+      "retrieved_sources": [
+        "src/oss/concepts/products.mdx",
+        "src/oss/python/integrations/tools/vectara.mdx",
+        "src/langsmith/faq.mdx",
+        "src/oss/python/integrations/tools/bodo.mdx",
+        "src/oss/python/integrations/vectorstores/couchbase.mdx",
+        "src/oss/langchain/philosophy.mdx",
+        "src/oss/langchain/context-engineering.mdx",
+        "src/oss/langgraph/overview.mdx",
+        "src/oss/python/integrations/retrievers/nimble_search.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 10724,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer fails to directly compare the legacy AgentExecutor with a LangGraph-based agent. Instead, it compares the entire LangChain framework to the LangGraph library, which is a related but different and less specific question. This is a major omission.",
+        "verified_sources": [
+          "src/oss/langgraph/overview.mdx"
+        ],
+        "elapsed_ms": 19649
+      }
+    },
+    {
+      "id": "3.2",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 支持哪些向量数据库？哪个最适合生产环境？",
+      "question_en": "What vector databases does LangChain support? Which is best for production?",
+      "expected_winner": "agentic",
+      "source_hint": "integrations/vectorstores (multiple pages)",
+      "is_demo_star": false,
+      "answer": "LangChain supports integration with the following vector stores:\n\n*   Databricks Vector Search [1, 7]\n*   IBM Db2 [3]\n*   Teradata [5]\n*   SQL Server (including Azure SQL) [6]\n*   Azure AI Search (formerly Azure Cognitive Search) [8]\n\nRegarding which is best for production, the context provides the following information:\n\n*   **Teradata**: Offers enterprise security features and built-in performance monitoring for production considerations [5].\n*   **Azure AI Search**: Is optimized for speed and relevance on production-scale workloads on Azure [8].\n*   **Azure SQL**: Simplifies vector storage directly within a relational database, increasing the security of solutions and reducing overall complexity [6].\n\nThe context does not explicitly state which of these is \"best\" for production, but highlights production-ready features for Teradata, Azure AI Search, and Azure SQL.",
+      "retrieved_sources": [
+        "src/oss/python/integrations/providers/databricks.mdx",
+        "src/langsmith/pricing-faq.mdx",
+        "src/oss/python/integrations/vectorstores/db2.mdx",
+        "src/oss/python/integrations/tools/mcp_toolbox.mdx",
+        "src/oss/python/integrations/vectorstores/teradata.mdx",
+        "src/oss/python/integrations/vectorstores/sqlserver.mdx",
+        "src/oss/javascript/integrations/vectorstores/azure_aisearch.mdx",
+        "src/oss/python/integrations/vectorstores/index.mdx",
+        "src/langsmith/self-host-egress.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 5312,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer correctly summarizes the production-ready features for a few vector stores, but it fails significantly on the first part of the question. It lists only 5 supported vector stores, while the documentation lists dozens, making the answer critically incomplete.",
+        "verified_sources": [
+          "src/oss/python/integrations/vectorstores/index.mdx",
+          "src/oss/python/integrations/vectorstores/teradata.mdx",
+          "src/oss/javascript/integrations/vectorstores/azure_aisearch.mdx",
+          "src/oss/python/integrations/vectorstores/sqlserver.mdx"
+        ],
+        "elapsed_ms": 18010
+      }
+    },
+    {
+      "id": "3.3",
+      "dimension": "cross_doc",
+      "question_zh": "我想做一个能联网搜索的 agent，LangChain 和 LangGraph 各自怎么做？哪个更好？",
+      "question_en": "I want to build an agent that searches the web. How does LangChain vs LangGraph approach this? Which is better?",
+      "expected_winner": "agentic",
+      "source_hint": "LangChain agents + LangGraph + Tavily/Serper integrations",
+      "is_demo_star": false,
+      "answer": "The provided context does not explicitly detail how LangChain or LangGraph specifically approach building a \"web search\" agent. However, it offers general guidance on their respective strengths for agent development.\n\nHere's how LangChain and LangGraph generally approach agents and which might be better depending on the need:\n\n*   **LangChain:**\n    *   Provides prebuilt agent architectures and abstractions, making it easy to get started for simple use cases [1, 7, 9].\n    *   Offers a standard interface to interact with models and other components, useful for straightforward chains and retrieval flows [2].\n    *   If you are just getting started with agents or want a higher-level abstraction, LangChain's agents are recommended as they provide prebuilt architectures for common LLM and tool-calling loops [5].\n    *   LangChain agents are built on LangGraph [3].\n\n*   **LangGraph:**\n    *   Is an orchestration framework for complex agentic systems and is more low-level and controllable than LangChain agents [2].\n    *   If deeper customization is required, agents can be implemented directly in LangGraph [1].\n    *   Provides a more expressive framework to handle unique tasks without restricting users to a single black-box cognitive architecture [4].\n    *   When building an agent with LangGraph, you break it into discrete steps called nodes, describe decisions and transitions, and connect nodes through a shared state [6].\n    *   As of an update in October 2024, LangGraph became the preferred way to build any AI application that is more than a single LLM call, with most LangChain chains and agents being deprecated in favor of migration to LangGraph [10].\n\n**Which is better?**\n\n*   For **simpler use cases** or if you want a **higher-level abstraction** to get started quickly, LangChain's prebuilt agents are suitable [1, 5].\n*   For **deeper customization**, **complex tasks**, or when you need **more control** over the agent's flow and state, LangGraph is recommended [1, 2, 4]. The documentation indicates a shift towards LangGraph for more complex applications [10].\n\nThe context does not provide specific examples or guidance on implementing a \"web search\" tool within either framework.\n\nSources: [1], [2], [3], [4], [5], [6], [7], [9], [10]",
+      "retrieved_sources": [
+        "src/oss/learn.mdx",
+        "src/langsmith/faq.mdx",
+        "src/oss/langchain/philosophy.mdx",
+        "src/oss/langgraph/overview.mdx",
+        "src/oss/langgraph/thinking-in-langgraph.mdx",
+        "src/oss/concepts/products.mdx",
+        "src/oss/langchain/short-term-memory.mdx",
+        "src/oss/langchain/overview.mdx"
+      ],
+      "retrieved_count": 10,
+      "tool_calls": [],
+      "latency_ms": 8814,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer correctly distinguishes between the high-level LangChain abstractions and the low-level LangGraph framework. However, it critically misinterprets a future roadmap item from the documentation as a past event, stating that LangChain agents were deprecated in October 2024.",
+        "verified_sources": [
+          "src/oss/langchain/philosophy.mdx",
+          "src/oss/langgraph/overview.mdx",
+          "src/oss/langgraph/thinking-in-langgraph.mdx",
+          "src/oss/langchain/overview.mdx"
+        ],
+        "elapsed_ms": 24764
+      }
+    },
+    {
+      "id": "3.4",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 的 Document Loaders 和 Retrievers 各自能做什么？它们怎么配合？",
+      "question_en": "What do LangChain's Document Loaders and Retrievers each do? How do they work together?",
+      "expected_winner": "tie",
+      "source_hint": "Document loaders + Retrievers modules",
+      "is_demo_star": true,
+      "answer": "LangChain's Document Loaders provide a standard interface for reading data from different sources (such as Slack, Notion, or Google Drive) into LangChain's `Document` format. This ensures data can be handled consistently regardless of the source [2, 4]. All document loaders implement the `BaseLoader` interface [2, 4].\n\nCommon API methods for document loaders include:\n*   `load()`: Loads all documents at once [2, 4].\n*   `loadAndSplit()`: Loads all documents at once and splits them into smaller documents (JavaScript) [2].\n*   `lazy_load()`: Streams documents lazily, useful for large datasets (Python) [4].\n\nLangChain Retrievers are Runnables, meaning they implement a standard set of methods like synchronous and asynchronous `invoke` and `batch` operations. While retrievers can be constructed from vector stores, they can also interface with non-vector store data sources, such as external APIs [3].\n\nThe provided context does not contain information on how Document Loaders and Retrievers work together.",
+      "retrieved_sources": [
+        "src/oss/python/integrations/document_transformers/infinity_rerank.mdx",
+        "src/oss/javascript/integrations/document_loaders/index.mdx",
+        "src/oss/langchain/knowledge-base.mdx",
+        "src/oss/python/integrations/document_loaders/index.mdx",
+        "src/langsmith/local.mdx",
+        "src/oss/langchain/context-engineering.mdx",
+        "src/oss/python/integrations/providers/box.mdx",
+        "src/oss/python/integrations/document_loaders/docling.mdx"
+      ],
+      "retrieved_count": 9,
+      "tool_calls": [],
+      "latency_ms": 4504,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer correctly defines Document Loaders and Retrievers individually. However, it incorrectly claims the documentation does not explain how they work together, which is a major omission. The `knowledge-base.mdx` source explicitly demonstrates the standard workflow of loading, splitting, storing, and then retrieving documents.",
+        "verified_sources": [
+          "src/oss/javascript/integrations/document_loaders/index.mdx",
+          "src/oss/python/integrations/document_loaders/index.mdx",
+          "src/oss/langchain/knowledge-base.mdx",
+          "src/oss/langchain/context-engineering.mdx"
+        ],
+        "elapsed_ms": 19520
+      }
+    },
+    {
+      "id": "3.5",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 官方教程里构建 RAG 应用推荐哪种 chunking 策略？这个推荐随时间变过吗？",
+      "question_en": "What chunking strategy does the official LangChain tutorial recommend for RAG? Has this recommendation evolved over time?",
+      "expected_winner": "agentic",
+      "source_hint": "RAG tutorials + chunking strategy + historical versions",
+      "is_demo_star": false,
+      "answer": "The provided context does not contain enough information to answer what chunking strategy the official LangChain tutorial recommends for RAG or if this recommendation has evolved over time.\n\nHowever, for the Vectara integration, the `add_files` interface does not require local processing or chunking, as Vectara handles the pre-processing, chunking, and embedding of file content into its knowledge store internally [9].",
+      "retrieved_sources": [
+        "src/oss/javascript/integrations/tools/tavily_crawl.mdx",
+        "src/oss/langchain/rag.mdx",
+        "src/oss/langchain/philosophy.mdx",
+        "src/oss/python/integrations/vectorstores/singlestore.mdx",
+        "src/langsmith/self-host-egress.mdx",
+        "src/oss/javascript/integrations/vectorstores/memory.mdx",
+        "src/oss/python/integrations/retrievers/graph_rag.mdx",
+        "src/oss/python/integrations/vectorstores/pinecone_sparse.mdx",
+        "src/oss/python/integrations/vectorstores/vectara.mdx"
+      ],
+      "retrieved_count": 9,
+      "tool_calls": [],
+      "latency_ms": 5937,
+      "judge": {
+        "score": 1,
+        "reasoning": "The candidate incorrectly claims the answer is not in the documentation. The main RAG tutorial page (`src/oss/langchain/rag.mdx`) explicitly demonstrates using `RecursiveCharacterTextSplitter` as the chunking strategy.",
+        "verified_sources": [
+          "src/oss/python/integrations/vectorstores/vectara.mdx",
+          "src/oss/langchain/rag.mdx"
+        ],
+        "elapsed_ms": 20944
+      }
+    }
+  ],
+  "scored_at": "2026-05-25T03:01:04Z",
+  "judge_model": "gemini-2.5-pro"
+}

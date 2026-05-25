@@ -2,7 +2,7 @@
 
 A side-by-side comparison of three AI document-Q&A paradigms — **traditional RAG**, **Agentic Search**, and **GraphRAG** — answering the same questions against the same corpus, so the trade-offs are visible instead of hand-waved.
 
-> **Status:** 🚧 M1 complete — RAG baseline runs end-to-end. M2 (Agentic) in progress. See milestone checklist below.
+> **Status:** 🚧 M1 + M2 complete — RAG and Agentic both wired and scored across all three dimensions. See the [decision matrix](./evaluation/decision_matrix.md). GraphRAG (M3) is next.
 
 ## Why
 
@@ -87,10 +87,10 @@ generator.
 
 ## Milestone progress
 
-- [x] **M1** — Infrastructure + RAG baseline (project skeleton, `rag_graph` runs end-to-end against all 5 single-hop questions; full per-question report in `evaluation/results/rag_single_hop.json` locally)
-- [ ] **M2** — Agentic search (`agentic_graph` with two retrieval tools, multi-hop / cross-doc questions passing)
-- [ ] **M3** — GraphRAG (knowledge-graph build, `graphrag_graph`, full 20-question coverage)
-- [ ] **M4** — Evaluation + demo (run all questions, score, generate decision matrix, demo rehearsal)
+- [x] **M1** — Infrastructure + RAG baseline (`rag_graph` runs end-to-end against all 5 single-hop questions; LLM-as-judge score 8/15)
+- [x] **M2** — Agentic search (`agentic_graph` with two retrieval tools; full 3-dimension coverage; LLM-as-judge score 31/45 vs RAG's 18/45 — see [decision matrix](./evaluation/decision_matrix.md))
+- [ ] **M3** — GraphRAG (knowledge-graph build, `graphrag_graph`, full 15-question coverage)
+- [ ] **M4** — Decision matrix finalization + demo rehearsal (matrix scaffold + scenario recommendations are in place; awaiting M3 numbers)
 
 ## Getting started
 
