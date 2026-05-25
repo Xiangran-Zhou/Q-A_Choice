@@ -109,6 +109,10 @@ The RAG smoke run prints the question, Gemini's answer with inline
 source citations, and the 10 chunks the hybrid retriever surfaced (5
 each from Chroma and BM25, fused via reciprocal rank fusion).
 
+The shared generator is `gemini-2.5-flash` (see the top-level
+[README](../README.md#notes-on-model-choice) for why this isn't Flash
+Lite). Override with `GEMINI_MODEL=...` in `.env`.
+
 ## Using a graph from Python
 
 ```python

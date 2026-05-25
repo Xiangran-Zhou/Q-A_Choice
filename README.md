@@ -16,7 +16,7 @@ A side-by-side comparison of three AI document-Q&A paradigms — **traditional R
 | **Agentic Search** | LangGraph agent with document-search tools and multi-turn tool use | Cross-document synthesis, unpredictable query patterns |
 | **GraphRAG** | Knowledge-graph extraction (LightRAG) + graph traversal + generation | Multi-hop reasoning, relationship questions, high-explainability domains |
 
-All three share the same generator model (Gemini Flash Lite) and the same source documents, so observed differences reflect the **paradigm**, not the model or the data.
+All three share the same generator model (Gemini 2.5 Flash) and the same source documents, so observed differences reflect the **paradigm**, not the model or the data. See [Notes on model choice](#notes-on-model-choice) for why this isn't Flash Lite.
 
 ## Architecture
 
@@ -56,6 +56,34 @@ All three share the same generator model (Gemini Flash Lite) and the same source
 ├── .env.example      Required API keys
 └── .gitignore
 ```
+
+## Notes on model choice
+
+The shared generator is **Gemini 2.5 Flash**, not Flash Lite as the
+original engineering plan called for.
+
+The plan picked Flash Lite for cost reasons, but an early M2 run found
+that Flash Lite produced an **empty final answer in 4 out of 5
+multi-hop questions** when driving the ReAct-style Agentic loop. The
+agent would call `search_docs_vector`, receive the chunks, and then
+emit an empty `AIMessage` with no synthesis — a known failure mode of
+smaller models with tool-calling loops. The same question on the same
+prompt with `gemini-2.5-flash` produced a correct, fully synthesized
+answer identifying `ToolRetryMiddleware` as the canonical solution.
+
+The fix was to upgrade the shared default for all three paradigms so
+the comparison stays fair (the alternative — letting Agentic use Flash
+while RAG and GraphRAG stay on Flash Lite — would let model capability
+masquerade as paradigm capability, defeating the point of the
+experiment).
+
+Cost impact is small: at $0.30 / $2.50 per million input/output tokens
+for Flash, each evaluation question is roughly **$0.005**, and a full
+15-question run across all three paradigms stays under **$0.25**.
+
+Override the model with `GEMINI_MODEL=…` in `.env` if you want to
+re-confirm the Flash Lite finding or experiment with a different
+generator.
 
 ## Milestone progress
 

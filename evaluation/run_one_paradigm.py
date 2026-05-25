@@ -40,6 +40,8 @@ from pathlib import Path
 
 from dotenv import find_dotenv, load_dotenv
 
+from qa_lab.llm import DEFAULT_GEMINI_MODEL
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 QUESTIONS_FILE = PROJECT_ROOT / "evaluation" / "questions.json"
 DEFAULT_RESULTS_DIR = PROJECT_ROOT / "evaluation" / "results"
@@ -180,7 +182,7 @@ def main() -> int:
 
     print(f"Loading paradigm '{args.paradigm}' ({PARADIGM_MODULES[args.paradigm]}) ...")
     graph = _import_graph(args.paradigm)
-    model_id = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
+    model_id = os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL)
     print(
         f"Running {args.paradigm} on {len(questions)} question(s) "
         f"(dimension={args.dimension}, model={model_id})"

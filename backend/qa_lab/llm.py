@@ -16,7 +16,7 @@ import os
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-DEFAULT_GEMINI_MODEL = "gemini-2.5-flash-lite"
+DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
 DEFAULT_TEMPERATURE = 0.0
 
 
