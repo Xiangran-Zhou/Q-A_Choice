@@ -147,3 +147,6 @@ temp/
 # ===== Private planning docs (local only) =====
 PLAN.md
 PRODUCT.md
+
+# ===== Fetched documentation corpus (run scripts/fetch_docs.py to populate) =====
+backend/raw_docs/

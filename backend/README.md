@@ -10,6 +10,10 @@ exposes a compiled `graph` object plus a `build_graph()` factory.
 backend/
 ├── pyproject.toml          uv-managed project + dependencies
 ├── .python-version         Python 3.11
+├── scripts/
+│   └── fetch_docs.py       Clones langchain-ai/docs into raw_docs/
+├── raw_docs/               LangChain docs corpus (gitignored, populated
+│                           by fetch_docs.py)
 └── qa_lab/
     ├── __init__.py
     └── graphs/
@@ -41,6 +45,21 @@ uv sync
 This creates a `.venv/`, installs all dependencies from
 `pyproject.toml`, and pins versions in `uv.lock`.
 
+## Fetching the documentation corpus
+
+All three paradigms share the same source corpus: the `.mdx` files from
+[`langchain-ai/docs`](https://github.com/langchain-ai/docs) — the
+unified documentation repo that backs python.langchain.com. Pull a
+local copy once per environment:
+
+```bash
+uv run python scripts/fetch_docs.py
+```
+
+This shallow-clones the repo into `backend/raw_docs/` (gitignored) and
+strips the `.git` directory so the corpus sits as a plain file tree.
+Re-run with `--force` to refresh.
+
 ## Running the stubs
 
 Each graph module is runnable as a script and prints its placeholder
@@ -71,10 +90,11 @@ print(result["answer"])
 
 The next milestones, in order:
 
-1. Load the LangChain documentation corpus (shared by all three paradigms)
-2. Implement real `rag_graph` (Chroma + BM25 hybrid retrieval + Gemini Flash Lite)
-3. Port `agentic_graph` from `chat-langchain`'s `docs_graph`
-4. Build the knowledge graph and implement `graphrag_graph` with LightRAG
+1. ✅ Fetch the LangChain documentation corpus (`scripts/fetch_docs.py`)
+2. Chunk + embed the corpus into a local Chroma store (shared by all three paradigms)
+3. Implement real `rag_graph` (Chroma + BM25 hybrid retrieval + Gemini Flash Lite)
+4. Implement `agentic_graph` (own tools querying Chroma + filesystem; agent pattern inspired by `chat-langchain`)
+5. Build the knowledge graph and implement `graphrag_graph` with LightRAG
 
 See the top-level [`README.md`](../README.md) for the project-wide
 milestone checklist.
