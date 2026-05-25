@@ -1,0 +1,203 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "total_questions": 20,
+    "dimensions": ["single_hop", "multi_hop", "cross_doc"],
+    "scoring_scale": "0-3",
+    "scoring_criteria": {
+      "3": "Fully correct: accurate, complete, with sources",
+      "2": "Mostly correct: core info right, missing details or sources",
+      "1": "Partially correct: has errors or important omissions",
+      "0": "Wrong or hallucinated"
+    }
+  },
+  "questions": [
+    {
+      "id": "1.1",
+      "dimension": "single_hop",
+      "question_zh": "ChatOpenAI 的 temperature 参数默认值是多少？",
+      "question_en": "What is the default value of the temperature parameter in ChatOpenAI?",
+      "expected_winner": "rag",
+      "rationale": "单页面精确查询，向量召回直接命中 API 参考",
+      "source_hint": "langchain-openai package reference",
+      "is_demo_star": false
+    },
+    {
+      "id": "1.2",
+      "dimension": "single_hop",
+      "question_zh": "RecursiveCharacterTextSplitter 的默认 chunk_size 是多少？",
+      "question_en": "What is the default chunk_size of RecursiveCharacterTextSplitter?",
+      "expected_winner": "rag",
+      "rationale": "纯参数查询，三方案都能答但 RAG 最便宜",
+      "source_hint": "text_splitters reference",
+      "is_demo_star": false
+    },
+    {
+      "id": "1.3",
+      "dimension": "single_hop",
+      "question_zh": "LangSmith 的免费 plan 每月有多少 traces 额度？",
+      "question_en": "How many traces does the LangSmith free plan include per month?",
+      "expected_winner": "tie",
+      "rationale": "三方案都能答，重点演示成本差异",
+      "source_hint": "LangSmith pricing page",
+      "is_demo_star": true,
+      "demo_role": "成本对比开场题"
+    },
+    {
+      "id": "1.4",
+      "dimension": "single_hop",
+      "question_zh": "BaseChatMessageHistory 类有哪些必须实现的抽象方法？",
+      "question_en": "What abstract methods must be implemented when subclassing BaseChatMessageHistory?",
+      "expected_winner": "rag",
+      "rationale": "单页面列表查询，RAG 强项",
+      "source_hint": "core/chat_history reference",
+      "is_demo_star": false
+    },
+    {
+      "id": "1.5",
+      "dimension": "single_hop",
+      "question_zh": "LangGraph 的 interrupt 函数在哪个版本引入？",
+      "question_en": "In which version of LangGraph was the interrupt function introduced?",
+      "expected_winner": "agentic",
+      "rationale": "陷阱题：看似单跳但版本信息在 release notes，与功能说明分离",
+      "source_hint": "LangGraph changelog + interrupt docs",
+      "is_demo_star": true,
+      "demo_role": "RAG 翻车诚实题"
+    },
+    {
+      "id": "2.1",
+      "dimension": "multi_hop",
+      "question_zh": "用 LCEL 把 RunnablePassthrough 和 ChatPromptTemplate 串起来需要注意什么？",
+      "question_en": "What should I know when chaining RunnablePassthrough with ChatPromptTemplate via LCEL?",
+      "expected_winner": "graphrag",
+      "rationale": "入门级多跳：三个组件的协作关系",
+      "source_hint": "LCEL + RunnablePassthrough + ChatPromptTemplate docs",
+      "is_demo_star": false
+    },
+    {
+      "id": "2.2",
+      "dimension": "multi_hop",
+      "question_zh": "我想用 LangGraph 实现一个 agent，让它在调用工具失败时自动重试 3 次，需要哪些组件配合？",
+      "question_en": "I want to build a LangGraph agent that automatically retries 3 times when tool calls fail. What components do I need?",
+      "expected_winner": "graphrag",
+      "rationale": "3-4 跳关系链，组件依赖图清晰，GraphRAG 主场",
+      "source_hint": "LangGraph + ToolNode + RetryPolicy + error handling",
+      "is_demo_star": true,
+      "demo_role": "GraphRAG 高光时刻"
+    },
+    {
+      "id": "2.3",
+      "dimension": "multi_hop",
+      "question_zh": "ConversationBufferMemory 已经被废弃了，对应的新方案是什么？它和 LangGraph 的 MemorySaver 有什么关系？",
+      "question_en": "ConversationBufferMemory is deprecated. What replaces it, and how does it relate to LangGraph's MemorySaver?",
+      "expected_winner": "graphrag",
+      "rationale": "版本演进关系链：废弃 → 替代 → 新生态",
+      "source_hint": "Memory deprecation + new approach + LangGraph Memory",
+      "is_demo_star": false
+    },
+    {
+      "id": "2.4",
+      "dimension": "multi_hop",
+      "question_zh": "LangSmith 的 @traceable 装饰器和 LangChain 的 callbacks 系统是什么关系？",
+      "question_en": "What is the relationship between LangSmith's @traceable decorator and LangChain's callbacks system?",
+      "expected_winner": "graphrag",
+      "rationale": "跨产品的实体关系",
+      "source_hint": "LangSmith tracing + LangChain callbacks",
+      "is_demo_star": false
+    },
+    {
+      "id": "2.5",
+      "dimension": "multi_hop",
+      "question_zh": "我用 LangServe 部署了一个 chain，前端能不能直接调用？需要做什么配置？",
+      "question_en": "I deployed a chain with LangServe. Can the frontend call it directly? What configuration is needed?",
+      "expected_winner": "agentic",
+      "rationale": "反转题：多跳但需要动态验证步骤，Agentic 优于 GraphRAG",
+      "source_hint": "LangServe + deployment + client examples",
+      "is_demo_star": false
+    },
+    {
+      "id": "3.1",
+      "dimension": "cross_doc",
+      "question_zh": "AgentExecutor（旧）和 LangGraph 的 agent（新）在功能上有什么差异？我应该选哪个？",
+      "question_en": "What are the differences between AgentExecutor (legacy) and LangGraph's agent (new)? Which should I choose?",
+      "expected_winner": "agentic",
+      "rationale": "新旧方案对比，PM 经典命题，Agentic 主场",
+      "source_hint": "Legacy AgentExecutor + LangGraph agents + migration guide",
+      "is_demo_star": true,
+      "demo_role": "Agentic 综合能力演示"
+    },
+    {
+      "id": "3.2",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 支持哪些向量数据库？哪个最适合生产环境？",
+      "question_en": "What vector databases does LangChain support? Which is best for production?",
+      "expected_winner": "agentic",
+      "rationale": "穷举型问题：需遍历多个集成页面并对比",
+      "source_hint": "integrations/vectorstores (multiple pages)",
+      "is_demo_star": false
+    },
+    {
+      "id": "3.3",
+      "dimension": "cross_doc",
+      "question_zh": "我想做一个能联网搜索的 agent，LangChain 和 LangGraph 各自怎么做？哪个更好？",
+      "question_en": "I want to build an agent that searches the web. How does LangChain vs LangGraph approach this? Which is better?",
+      "expected_winner": "agentic",
+      "rationale": "跨子项目 + 跨工具综合",
+      "source_hint": "LangChain agents + LangGraph + Tavily/Serper integrations",
+      "is_demo_star": false
+    },
+    {
+      "id": "3.4",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 的 Document Loaders 和 Retrievers 各自能做什么？它们怎么配合？",
+      "question_en": "What do LangChain's Document Loaders and Retrievers each do? How do they work together?",
+      "expected_winner": "tie",
+      "rationale": "平局题：故意放一道无明显赢家的题，提升评测可信度",
+      "source_hint": "Document loaders + Retrievers modules",
+      "is_demo_star": true,
+      "demo_role": "诚实性展示（可选演示）"
+    },
+    {
+      "id": "3.5",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 官方教程里构建 RAG 应用推荐哪种 chunking 策略？这个推荐随时间变过吗？",
+      "question_en": "What chunking strategy does the official LangChain tutorial recommend for RAG? Has this recommendation evolved over time?",
+      "expected_winner": "agentic",
+      "rationale": "反转题：RAG 在'历史演变'问题上盲区，Agentic 能主动查 changes",
+      "source_hint": "RAG tutorials + chunking strategy + historical versions",
+      "is_demo_star": false
+    }
+  ],
+  "demo_star_sequence": [
+    {
+      "order": 1,
+      "id": "1.3",
+      "role": "成本对比开场——建立量级差异认知",
+      "duration_sec": 60
+    },
+    {
+      "order": 2,
+      "id": "2.2",
+      "role": "GraphRAG 高光时刻——展示图遍历可视化",
+      "duration_sec": 60
+    },
+    {
+      "order": 3,
+      "id": "3.1",
+      "role": "Agentic 综合能力——PM 经典命题共鸣",
+      "duration_sec": 60
+    },
+    {
+      "order": 4,
+      "id": "1.5",
+      "role": "RAG 翻车诚实题——证明研究客观",
+      "duration_sec": 30
+    },
+    {
+      "order": 5,
+      "id": "3.4",
+      "role": "平局展示（可选）——诚实性加分",
+      "duration_sec": 30
+    }
+  ]
+}
