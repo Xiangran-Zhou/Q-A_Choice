@@ -27,6 +27,7 @@ from qa_lab.data.ingest import (
     split_documents,
 )
 from qa_lab.data.loader import load_documents
+from qa_lab.data.retriever import save_chunks_for_bm25
 
 EMBED_BATCH_SIZE = 500
 SMOKE_QUERY = "How does LangGraph's interrupt function work?"
@@ -111,6 +112,10 @@ def main() -> int:
         rate = done / elapsed if elapsed else 0
         print(f"  {done:,} / {len(chunks):,}  ({rate:.0f} chunks/s)")
     print(f"  Embedded {len(chunks):,} chunks in {_human_time(time.time() - t0)}")
+
+    # ---- Persist chunks for BM25 ----
+    print("Saving chunk cache for BM25 ...")
+    save_chunks_for_bm25(chunks)
 
     # ---- Smoke test ----
     _smoke_test(store)

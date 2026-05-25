@@ -11,6 +11,9 @@ dependencies = [
     "langchain-openai>=1.2.2",
     "langchain-text-splitters>=1.1.2",
     "python-dotenv>=1.2.2",
+    "langchain-google-genai>=4.2.3",
+    "langchain-community>=0.4.2",
+    "rank-bm25>=0.2.2",
 ]
 
 [dependency-groups]

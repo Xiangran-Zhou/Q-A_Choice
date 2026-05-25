@@ -19,13 +19,15 @@ backend/
 │                           by ingest.py)
 └── qa_lab/
     ├── __init__.py
+    ├── llm.py                  Shared Gemini chat-model factory
     ├── data/
     │   ├── __init__.py
     │   ├── loader.py           Read .mdx files into LangChain Documents
-    │   └── ingest.py           Chunking + embedding configuration
+    │   ├── ingest.py           Chunking + embedding configuration
+    │   └── retriever.py        Vector + BM25 + hybrid retrievers
     └── graphs/
         ├── __init__.py
-        ├── rag_graph.py        Traditional RAG (stub)
+        ├── rag_graph.py        Traditional RAG (real: hybrid retrieval + Gemini)
         ├── agentic_graph.py    Agentic Search   (stub)
         └── graphrag_graph.py   GraphRAG         (stub)
 ```
@@ -93,30 +95,36 @@ approximately **$0.12** in OpenAI embedding calls.
 After ingestion the script runs a smoke query so retrieval failures
 surface immediately.
 
-## Running the stubs
+## Running the graphs
 
-Each graph module is runnable as a script and prints its placeholder
-response:
+The RAG graph is wired end-to-end. The other two are still stubs.
 
 ```bash
-uv run python -m qa_lab.graphs.rag_graph
-uv run python -m qa_lab.graphs.agentic_graph
-uv run python -m qa_lab.graphs.graphrag_graph
+uv run python -m qa_lab.graphs.rag_graph        # real: hybrid retrieval + Gemini
+uv run python -m qa_lab.graphs.agentic_graph    # placeholder
+uv run python -m qa_lab.graphs.graphrag_graph   # placeholder
 ```
 
-Expected output (one line per command), for example:
-
-```
-[rag_graph stub] Real retrieval not implemented yet. You asked: 'What is LangChain?'
-```
+The RAG smoke run prints the question, Gemini's answer with inline
+source citations, and the 10 chunks the hybrid retriever surfaced (5
+each from Chroma and BM25, fused via reciprocal rank fusion).
 
 ## Using a graph from Python
 
 ```python
+from dotenv import find_dotenv, load_dotenv
+load_dotenv(find_dotenv(usecwd=True))   # picks up OPENAI_API_KEY + GOOGLE_API_KEY
+
 from qa_lab.graphs.rag_graph import graph
 
-result = graph.invoke({"question": "What is LangChain?", "answer": ""})
+result = graph.invoke({
+    "question": "How does LangGraph's interrupt function work?",
+    "retrieved_chunks": [],
+    "answer": "",
+})
 print(result["answer"])
+for chunk in result["retrieved_chunks"]:
+    print(chunk.metadata["source"])
 ```
 
 ## What's next
@@ -124,8 +132,8 @@ print(result["answer"])
 The next milestones, in order:
 
 1. ✅ Fetch the LangChain documentation corpus (`scripts/fetch_docs.py`)
-2. Chunk + embed the corpus into a local Chroma store (shared by all three paradigms)
-3. Implement real `rag_graph` (Chroma + BM25 hybrid retrieval + Gemini Flash Lite)
+2. ✅ Chunk + embed the corpus into a local Chroma store (shared by all three paradigms)
+3. ✅ Implement real `rag_graph` (Chroma + BM25 hybrid retrieval + Gemini Flash Lite)
 4. Implement `agentic_graph` (own tools querying Chroma + filesystem; agent pattern inspired by `chat-langchain`)
 5. Build the knowledge graph and implement `graphrag_graph` with LightRAG
 
