@@ -134,6 +134,7 @@ data/processed/
 langsmith_cache/
 
 # ===== Evaluation outputs =====
+evaluation/results/
 evaluation/results.json
 evaluation/runs/
 evaluation/*.log
