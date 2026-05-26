@@ -58,14 +58,17 @@ while [ "$poll" -lt "$MAX_POLLS" ]; do
   } >> "$LOG_FILE"
 
   # One small Gemini call. Uses google.genai directly with a unique
-  # nonce prompt to bypass any caching layer (LightRAG's
-  # gemini_complete_if_cache literally reads cache first, so identical
-  # poll prompts produced false positives — fixed 2026-05-25).
+  # nonce prompt to bypass any caching layer.
   # Exit codes:
   #   0 → quota available, time to launch
   #   1 → quota still exhausted, keep polling
   #   2 → some other error, log and keep polling (don't kill the whole thing)
-  if uv run python -c "
+  #
+  # NB: we capture $? *before* any subsequent `if` test. The earlier shape
+  # (`if uv run ...; then ...; fi; status=$?`) silently reset $? to 0 after
+  # the fi, producing a misleading "Unexpected status=0" log line on
+  # quota-exhausted polls (fixed 2026-05-25).
+  uv run python -c "
 import os, sys, time
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv(usecwd=True))
@@ -85,7 +88,10 @@ except Exception as e:
         sys.exit(1)
     sys.stderr.write(f'Unexpected error: {msg}\n')
     sys.exit(2)
-" >> "$LOG_FILE" 2>&1; then
+" >> "$LOG_FILE" 2>&1
+  poll_status=$?
+
+  if [ "$poll_status" -eq 0 ]; then
     {
       echo
       echo "=== Quota cleared on poll $poll at $(date). Launching build wrapper. ==="
@@ -102,13 +108,10 @@ except Exception as e:
 
     rm -f "$PID_FILE"
     exit 0
-  fi
-
-  status=$?
-  if [ "$status" -eq 1 ]; then
+  elif [ "$poll_status" -eq 1 ]; then
     echo "  Still quota-exhausted, sleeping ${POLL_INTERVAL_SEC}s" >> "$LOG_FILE"
   else
-    echo "  Unexpected status=$status, sleeping anyway and retrying" >> "$LOG_FILE"
+    echo "  Unexpected exit $poll_status, sleeping anyway and retrying" >> "$LOG_FILE"
   fi
   sleep "$POLL_INTERVAL_SEC"
 done
