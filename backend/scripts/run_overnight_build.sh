@@ -75,6 +75,23 @@ while [ "$attempt" -lt "$MAX_RESTARTS" ]; do
   fi
 
   exit_code=$?
+
+  # Detect the daily-quota wall: tail the last 200 lines of this run's
+  # output and look for the RESOURCE_EXHAUSTED / per-day quota signal.
+  # When we hit it, retrying is pointless — every subsequent call just
+  # gets rejected and burns more (rejected) requests. Abort cleanly so
+  # the user / auto_resume_when_ready.sh can take over.
+  if tail -n 200 "$LOG_FILE" | grep -q "generate_requests_per_model_per_day"; then
+    {
+      echo
+      echo "*** Detected daily quota exhaustion on attempt $attempt at $(date)"
+      echo "*** Aborting further retries — wait ~24 h for the rolling window"
+      echo "*** to slide, then re-run the wrapper (or use auto_resume_when_ready.sh)"
+    } >> "$LOG_FILE"
+    rm -f "$PID_FILE"
+    exit 2
+  fi
+
   {
     echo
     echo "*** build_graph.py exited $exit_code on attempt $attempt at $(date)"
