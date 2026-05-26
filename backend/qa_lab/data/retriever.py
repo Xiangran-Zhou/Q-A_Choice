@@ -12,6 +12,11 @@ Three retrievers, one corpus:
 
 The BM25 chunks file is stored next to the Chroma directory so the two
 caches stay in sync (wipe one, wipe both).
+
+Performance note: `BM25Retriever.from_documents(28_000_chunks)` tokenises
+the entire corpus, which takes 10-30 s on a laptop. To keep API requests
+snappy, the BM25 retriever and the hybrid retriever are **module-level
+singletons** keyed by `k`: built once on first call, reused thereafter.
 """
 
 from __future__ import annotations
@@ -54,12 +59,29 @@ def get_vector_retriever(k: int = DEFAULT_K) -> BaseRetriever:
     return get_vector_store().as_retriever(search_kwargs={"k": k})
 
 
+# ----- Cached BM25 + hybrid singletons --------------------------------
+#
+# BM25Retriever.from_documents is expensive (10-30 s for 28k chunks);
+# EnsembleRetriever composes cheap, but its BM25 branch shares the same
+# heavy tokenisation. Cache both by `k` so repeated requests reuse the
+# pre-tokenised state.
+
+_bm25_cache: dict[int, BM25Retriever] = {}
+_hybrid_cache: dict[tuple[int, tuple[float, float]], EnsembleRetriever] = {}
+
+
 def get_bm25_retriever(k: int = DEFAULT_K) -> BM25Retriever:
-    """Lexical retrieval via BM25 over the same chunks as the vector store."""
-    chunks = load_chunks_for_bm25()
-    retriever = BM25Retriever.from_documents(chunks)
-    retriever.k = k
-    return retriever
+    """Lexical retrieval via BM25 over the same chunks as the vector store.
+
+    Cached per `k`; first call tokenises the full corpus (slow), later
+    calls return the same retriever instance with `k` re-set.
+    """
+    if k not in _bm25_cache:
+        chunks = load_chunks_for_bm25()
+        retriever = BM25Retriever.from_documents(chunks)
+        retriever.k = k
+        _bm25_cache[k] = retriever
+    return _bm25_cache[k]
 
 
 def get_hybrid_retriever(
@@ -69,9 +91,13 @@ def get_hybrid_retriever(
     """Vector + BM25 fused via reciprocal rank fusion.
 
     `weights` is `(vector_weight, bm25_weight)`. Both retrievers fetch
-    `k` results each before RRF merging.
+    `k` results each before RRF merging. The returned instance is cached
+    per (k, weights) so the heavy BM25 build only happens once.
     """
-    return EnsembleRetriever(
-        retrievers=[get_vector_retriever(k=k), get_bm25_retriever(k=k)],
-        weights=list(weights),
-    )
+    cache_key = (k, weights)
+    if cache_key not in _hybrid_cache:
+        _hybrid_cache[cache_key] = EnsembleRetriever(
+            retrievers=[get_vector_retriever(k=k), get_bm25_retriever(k=k)],
+            weights=list(weights),
+        )
+    return _hybrid_cache[cache_key]
