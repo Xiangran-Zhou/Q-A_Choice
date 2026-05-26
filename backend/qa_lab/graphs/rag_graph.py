@@ -78,7 +78,7 @@ def _generate_node(state: State) -> dict:
     user_message = (
         f"Context:\n\n{context}\n\n---\n\nQuestion: {state['question']}"
     )
-    response = get_chat_model().invoke(
+    response = get_chat_model(paradigm="rag").invoke(
         [
             SystemMessage(content=SYSTEM_PROMPT),
             HumanMessage(content=user_message),

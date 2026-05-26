@@ -82,7 +82,7 @@ def _get_react_agent():
     global _react_agent_cache
     if _react_agent_cache is None:
         _react_agent_cache = create_react_agent(
-            model=get_chat_model(),
+            model=get_chat_model(paradigm="agentic"),
             tools=AGENTIC_TOOLS,
             prompt=SYSTEM_PROMPT,
         )

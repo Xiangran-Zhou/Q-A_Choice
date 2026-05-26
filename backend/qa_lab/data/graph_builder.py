@@ -39,11 +39,22 @@ LLM_MODEL = "gemini-2.5-flash"
 
 
 def _resolve_gemini_key() -> str | None:
-    """LightRAG's Gemini adapter looks for `GEMINI_API_KEY`, but the rest
-    of the project uses `GOOGLE_API_KEY` (matching langchain-google-genai).
-    Accept either to avoid forcing the user to duplicate the key in `.env`.
+    """Pick the Gemini API key for GraphRAG-related work (build + query).
+
+    Preference order so each paradigm can be bound to its own GCP
+    project / daily quota without breaking older single-key setups:
+
+      1. ``GOOGLE_API_KEY_GRAPHRAG`` — explicit per-paradigm key
+         (qa-lab-graphrag project).
+      2. ``GEMINI_API_KEY`` — LightRAG-native naming, in case the user
+         set that one instead.
+      3. ``GOOGLE_API_KEY`` — project-wide fallback.
     """
-    return os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    return (
+        os.getenv("GOOGLE_API_KEY_GRAPHRAG")
+        or os.getenv("GEMINI_API_KEY")
+        or os.getenv("GOOGLE_API_KEY")
+    )
 
 
 async def _gemini_llm(
