@@ -57,32 +57,34 @@ while [ "$poll" -lt "$MAX_POLLS" ]; do
     echo "[Poll $poll/$MAX_POLLS]  $(date)"
   } >> "$LOG_FILE"
 
-  # One small Gemini call. Exit codes:
+  # One small Gemini call. Uses google.genai directly with a unique
+  # nonce prompt to bypass any caching layer (LightRAG's
+  # gemini_complete_if_cache literally reads cache first, so identical
+  # poll prompts produced false positives — fixed 2026-05-25).
+  # Exit codes:
   #   0 → quota available, time to launch
   #   1 → quota still exhausted, keep polling
   #   2 → some other error, log and keep polling (don't kill the whole thing)
   if uv run python -c "
-import asyncio, os, sys
+import os, sys, time
 from dotenv import find_dotenv, load_dotenv
 load_dotenv(find_dotenv(usecwd=True))
-from lightrag.llm.gemini import gemini_complete_if_cache
+from google import genai
 
-async def t():
-    try:
-        await gemini_complete_if_cache(
-            'gemini-2.5-flash',
-            'ok',
-            api_key=os.getenv('GOOGLE_API_KEY'),
-        )
-        sys.exit(0)
-    except Exception as e:
-        msg = str(e)
-        if 'generate_requests_per_model_per_day' in msg or 'RESOURCE_EXHAUSTED' in msg:
-            sys.exit(1)
-        sys.stderr.write(f'Unexpected error: {msg}\n')
-        sys.exit(2)
-
-asyncio.run(t())
+client = genai.Client(api_key=os.getenv('GOOGLE_API_KEY'))
+nonce = int(time.time())
+try:
+    r = client.models.generate_content(
+        model='gemini-2.5-flash',
+        contents=f'Reply with the digit {nonce % 10}',
+    )
+    sys.exit(0)
+except Exception as e:
+    msg = str(e)
+    if 'generate_requests_per_model_per_day' in msg or 'RESOURCE_EXHAUSTED' in msg:
+        sys.exit(1)
+    sys.stderr.write(f'Unexpected error: {msg}\n')
+    sys.exit(2)
 " >> "$LOG_FILE" 2>&1; then
     {
       echo

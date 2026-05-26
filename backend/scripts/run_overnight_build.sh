@@ -65,7 +65,15 @@ while [ "$attempt" -lt "$MAX_RESTARTS" ]; do
     echo "--- Attempt $attempt/$MAX_RESTARTS  $(date) ---"
   } >> "$LOG_FILE"
 
-  if uv run python scripts/build_graph.py >> "$LOG_FILE" 2>&1; then
+  # Capture *this attempt's* output to a temp file so the quota-detection
+  # grep below only sees lines this attempt produced. Otherwise the
+  # detector would false-positive on 429s left over in the log from
+  # earlier days / earlier attempts. (Earlier bug, fixed 2026-05-25.)
+  ATTEMPT_LOG=$(mktemp -t lightrag_attempt.XXXXXX)
+
+  if uv run python scripts/build_graph.py >"$ATTEMPT_LOG" 2>&1; then
+    cat "$ATTEMPT_LOG" >> "$LOG_FILE"
+    rm -f "$ATTEMPT_LOG"
     {
       echo
       echo "=== Build completed successfully on attempt $attempt at $(date) ==="
@@ -75,13 +83,11 @@ while [ "$attempt" -lt "$MAX_RESTARTS" ]; do
   fi
 
   exit_code=$?
+  cat "$ATTEMPT_LOG" >> "$LOG_FILE"
 
-  # Detect the daily-quota wall: tail the last 200 lines of this run's
-  # output and look for the RESOURCE_EXHAUSTED / per-day quota signal.
-  # When we hit it, retrying is pointless — every subsequent call just
-  # gets rejected and burns more (rejected) requests. Abort cleanly so
-  # the user / auto_resume_when_ready.sh can take over.
-  if tail -n 200 "$LOG_FILE" | grep -q "generate_requests_per_model_per_day"; then
+  # Quota wall detection — only consider this attempt's lines.
+  if grep -q "generate_requests_per_model_per_day" "$ATTEMPT_LOG"; then
+    rm -f "$ATTEMPT_LOG"
     {
       echo
       echo "*** Detected daily quota exhaustion on attempt $attempt at $(date)"
@@ -92,6 +98,7 @@ while [ "$attempt" -lt "$MAX_RESTARTS" ]; do
     exit 2
   fi
 
+  rm -f "$ATTEMPT_LOG"
   {
     echo
     echo "*** build_graph.py exited $exit_code on attempt $attempt at $(date)"
