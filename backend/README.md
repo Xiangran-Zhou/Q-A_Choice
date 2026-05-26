@@ -12,24 +12,30 @@ backend/
 ├── .python-version         Python 3.11
 ├── scripts/
 │   ├── fetch_docs.py       Clones langchain-ai/docs into raw_docs/
-│   └── ingest.py           Loads → chunks → embeds → writes Chroma
-├── raw_docs/               LangChain docs corpus (gitignored, populated
-│                           by fetch_docs.py)
-├── chroma_db/              Persistent vector store (gitignored, built
-│                           by ingest.py)
+│   ├── ingest.py           Loads → chunks → embeds → writes Chroma
+│   ├── build_graph.py      Builds the LightRAG knowledge graph
+│   └── run_overnight_build.sh / auto_resume_when_ready.sh
+├── raw_docs/               LangChain docs corpus (gitignored)
+├── chroma_db/              Persistent vector store (gitignored)
+├── lightrag_storage/       Knowledge graph + LightRAG state (gitignored)
 └── qa_lab/
     ├── __init__.py
     ├── llm.py                  Shared Gemini chat-model factory
+    ├── api/
+    │   ├── __init__.py
+    │   └── server.py           FastAPI HTTP surface (one /api/query endpoint)
     ├── data/
     │   ├── __init__.py
     │   ├── loader.py           Read .mdx files into LangChain Documents
     │   ├── ingest.py           Chunking + embedding configuration
-    │   └── retriever.py        Vector + BM25 + hybrid retrievers
+    │   ├── retriever.py        Vector + BM25 + hybrid retrievers
+    │   └── graph_builder.py    LightRAG config (shared by build + query)
     └── graphs/
         ├── __init__.py
-        ├── rag_graph.py        Traditional RAG (real: hybrid retrieval + Gemini)
-        ├── agentic_graph.py    Agentic Search   (stub)
-        └── graphrag_graph.py   GraphRAG         (stub)
+        ├── rag_graph.py        Traditional RAG  (hybrid retrieval + Gemini)
+        ├── agentic_graph.py    Agentic Search   (create_react_agent + 2 tools)
+        ├── agentic_tools.py    Tools: search_docs_vector, read_doc_file
+        └── graphrag_graph.py   GraphRAG         (LightRAG hybrid query)
 ```
 
 All three graphs are currently **placeholders** — they accept a
@@ -131,15 +137,58 @@ for chunk in result["retrieved_chunks"]:
     print(chunk.metadata["source"])
 ```
 
+## Running the HTTP API
+
+The FastAPI server exposes one POST endpoint that all three paradigms
+share. Designed for the Next.js frontend at <http://localhost:3000>.
+
+```bash
+cd backend
+uv run uvicorn qa_lab.api.server:app --reload --port 8000
+```
+
+Then call it:
+
+```bash
+curl -X POST http://localhost:8000/api/query \
+  -H 'Content-Type: application/json' \
+  -d '{"paradigm": "rag", "question": "What is LangSmith?"}'
+```
+
+Response shape:
+
+```json
+{
+  "paradigm": "rag",
+  "question": "...",
+  "answer": "...",
+  "retrieved_chunks": [{"source": "src/...mdx", "content_preview": "..."}],
+  "tool_calls":       [{"name": "search_docs_vector", "args": {...}}],
+  "latency_ms": 1234,
+  "model": "gemini-2.5-flash"
+}
+```
+
+Upstream errors are mapped to clean HTTP statuses:
+
+- **429** — Gemini daily quota exhausted. `detail.kind ===
+  "upstream_quota_exhausted"`. Frontend should show a friendly
+  retry-later banner; the rolling 24-h window will slide eventually.
+- **502** — Any other upstream LLM error.
+
+CORS is open to `http://localhost:3000` only; tighten for any
+production deploy.
+
 ## What's next
 
 The next milestones, in order:
 
 1. ✅ Fetch the LangChain documentation corpus (`scripts/fetch_docs.py`)
 2. ✅ Chunk + embed the corpus into a local Chroma store (shared by all three paradigms)
-3. ✅ Implement real `rag_graph` (Chroma + BM25 hybrid retrieval + Gemini Flash Lite)
-4. Implement `agentic_graph` (own tools querying Chroma + filesystem; agent pattern inspired by `chat-langchain`)
-5. Build the knowledge graph and implement `graphrag_graph` with LightRAG
+3. ✅ Implement real `rag_graph` (Chroma + BM25 hybrid retrieval + Gemini Flash)
+4. ✅ Implement `agentic_graph` (own tools querying Chroma + filesystem; ReAct loop)
+5. 🚧 Build the knowledge graph and implement `graphrag_graph` with LightRAG (M3, in progress)
+6. ✅ HTTP API surface for the frontend (`qa_lab/api/server.py`)
 
 See the top-level [`README.md`](../README.md) for the project-wide
 milestone checklist.
