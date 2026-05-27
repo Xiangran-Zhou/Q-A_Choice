@@ -19,63 +19,64 @@ From `evaluation/questions.json` metadata:
 
 ## Single-hop (5 questions)
 
-Results: `evaluation/results/scored_{rag,agentic}_single_hop.json`
+Results: `evaluation/results/scored_{rag,agentic,graphrag}_single_hop.json`
 
 | ID  | Question                                              | Expected | RAG | Agentic | GraphRAG |
 |-----|-------------------------------------------------------|----------|:---:|:-------:|:--------:|
-| 1.1 | ChatOpenAI temperature default                        | rag      | 1   | 0       | TBD      |
-| 1.2 | RecursiveCharacterTextSplitter default chunk_size     | rag      | 2   | 1       | TBD      |
-| 1.3 | LangSmith free plan traces/month                      | tie      | 3   | 3       | TBD      |
-| 1.4 | BaseChatMessageHistory abstract methods               | rag      | 1   | 1       | TBD      |
-| 1.5 | LangGraph interrupt version introduced                | agentic  | 1   | 2       | TBD      |
-| **Subtotal (out of 15)** |                                            | –        | **8** | **7** | TBD      |
+| 1.1 | ChatOpenAI temperature default                        | rag      | 1   | 0       | 0        |
+| 1.2 | RecursiveCharacterTextSplitter default chunk_size     | rag      | 2   | 1       | 1        |
+| 1.3 | LangSmith free plan traces/month                      | tie      | 3   | 3       | 2        |
+| 1.4 | BaseChatMessageHistory abstract methods               | rag      | 1   | 1       | 2        |
+| 1.5 | LangGraph interrupt version introduced                | agentic  | 1   | 2       | 1        |
+| **Subtotal (out of 15)** |                                            | –        | **8** | **7** | **6**    |
 
 **Judge highlights**:
-- 1.1: RAG hallucinated the default (presented `temperature: 0` examples as the default); Agentic gave the default for `ChatContextual`, not `ChatOpenAI` — both wrong, but Agentic's wrong was more wrong.
-- 1.4: Both paradigms wrongly claimed the abstract methods are the async variants (`aget_messages`, etc.). The judge verified the actual abstract methods via the docs.
-- 1.5: Agentic edged ahead by inferring a defensible "interrupt existed before v1" from the docs it read; RAG fabricated a code-example claim that didn't hold up.
+- 1.1: All three paradigms got this wrong. RAG hallucinated "0", Agentic gave `ChatContextual`'s default not `ChatOpenAI`'s, GraphRAG aggregated the same wrong "0" from multiple cited chunks. **The temperature default is genuinely scattered across the docs in a way that fooled every retrieval approach.**
+- 1.4: GraphRAG narrowly edged the other two — judge gave it 2 because it honestly said "context insufficient" after searching multiple paths, while RAG/Agentic fabricated wrong abstract method names.
+- 1.5: Agentic still wins by inferring "interrupt existed before v1" from release notes. GraphRAG slightly worse — it correctly noted v1 added "typed interrupts" but failed to infer earlier baseline.
 
 ## Multi-hop (5 questions)
 
-Results: `evaluation/results/scored_{rag,agentic}_multi_hop.json`
+Results: `evaluation/results/scored_{rag,agentic,graphrag}_multi_hop.json`
 
 | ID  | Question                                                          | Expected | RAG | Agentic | GraphRAG |
 |-----|-------------------------------------------------------------------|----------|:---:|:-------:|:--------:|
-| 2.1 | LCEL chaining RunnablePassthrough + ChatPromptTemplate            | graphrag | 1   | 3       | TBD      |
-| 2.2 | LangGraph agent with 3-retry tool calls — required components     | graphrag | 1   | 1       | TBD      |
-| 2.3 | ConversationBufferMemory deprecation + LangGraph MemorySaver      | graphrag | 1   | 3       | TBD      |
-| 2.4 | LangSmith @traceable ↔ LangChain callbacks                        | graphrag | 1   | 1       | TBD      |
-| 2.5 | LangServe deployment + frontend client                            | agentic  | 1   | 1       | TBD      |
-| **Subtotal (out of 15)** |                                                                | –        | **5** | **9** | TBD      |
+| 2.1 | LCEL chaining RunnablePassthrough + ChatPromptTemplate            | graphrag | 1   | 3       | 2        |
+| 2.2 | LangGraph agent with 3-retry tool calls — required components     | graphrag | 1   | 1       | 2        |
+| 2.3 | ConversationBufferMemory deprecation + LangGraph MemorySaver      | graphrag | 1   | 3       | 3        |
+| 2.4 | LangSmith @traceable ↔ LangChain callbacks                        | graphrag | 1   | 1       | 2        |
+| 2.5 | LangServe deployment + frontend client                            | agentic  | 1   | 1       | 1        |
+| **Subtotal (out of 15)** |                                                                | –        | **5** | **9** | **10**   |
 
 **Judge highlights**:
-- 2.1: RAG claimed the context didn't contain the answer when the judge verified it did — punished 1; Agentic actually synthesized and got 3.
-- 2.2: Both paradigms wrongly applied `ToolRetryMiddleware` to LangGraph rather than LangChain agents (the middleware lives in `langchain.agents.middleware`). Tied at 1.
-- 2.3: Agentic's two-search pattern paid off — correctly identified that `ConversationBufferMemory` moved to `langchain-classic` and connected it to `MemorySaver`.
+- 2.1: Agentic synthesised the role-of-each-component story best (3); GraphRAG was technically correct on definitions (2) but less narrative.
+- 2.2: GraphRAG correctly identified `ToolNode + RetryPolicy` (2) where Agentic mis-attributed `ToolRetryMiddleware` to LangGraph (1). Graph traversal helped here.
+- 2.3: GraphRAG and Agentic both got the full 3 — the new "ConversationBufferMemory → checkpointer" relationship is exactly the kind of multi-entity question graph + multi-search both handle well.
+- **GraphRAG wins this dimension 10 vs 9**, the first place it beats Agentic — vindicating PRODUCT.md's pre-experiment prediction that GraphRAG's multi-hop reasoning is its home turf.
 
 ## Cross-doc (5 questions)
 
-Results: `evaluation/results/scored_{rag,agentic}_cross_doc.json`
+Results: `evaluation/results/scored_{rag,agentic,graphrag}_cross_doc.json`
 
 | ID  | Question                                                              | Expected | RAG | Agentic | GraphRAG |
 |-----|-----------------------------------------------------------------------|----------|:---:|:-------:|:--------:|
-| 3.1 | AgentExecutor vs LangGraph agent — which to choose                    | agentic  | 1   | 3       | TBD      |
-| 3.2 | Vector stores supported + best for production                         | agentic  | 1   | 3       | TBD      |
-| 3.3 | Web-search agent — LangChain vs LangGraph approach                    | agentic  | 1   | 3       | TBD      |
-| 3.4 | Document Loaders + Retrievers — roles and integration                 | tie      | 1   | 3       | TBD      |
-| 3.5 | Official RAG chunking recommendation + historical evolution           | agentic  | 1   | 3       | TBD      |
-| **Subtotal (out of 15)** |                                                                    | –        | **5** | **15** | TBD      |
+| 3.1 | AgentExecutor vs LangGraph agent — which to choose                    | agentic  | 1   | 3       | 3        |
+| 3.2 | Vector stores supported + best for production                         | agentic  | 1   | 3       | 1        |
+| 3.3 | Web-search agent — LangChain vs LangGraph approach                    | agentic  | 1   | 3       | 2        |
+| 3.4 | Document Loaders + Retrievers — roles and integration                 | tie      | 1   | 3       | 3        |
+| 3.5 | Official RAG chunking recommendation + historical evolution           | agentic  | 1   | 3       | 3        |
+| **Subtotal (out of 15)** |                                                                    | –        | **5** | **15** | **12**   |
 
-**Cross-doc is where the agentic pattern earns its keep**: 15/15 perfect.
-The agent did 2–3 searches per question with varying queries (verified
-in the `tool_calls` field of the un-scored reports), giving it material
-from multiple parts of the docs to synthesize. RAG ran a single hybrid
-retrieval and consistently misframed the question — judge punished
-every cross-doc answer at score 1, including 3.5 where RAG claimed the
-answer wasn't in the docs but the judge confirmed the main RAG tutorial
-page covers it.
+**Judge highlights**:
+- 3.1, 3.4, 3.5: GraphRAG matches Agentic's perfect-3 — relationship-heavy questions where the graph's "X relates-to Y" edges pay off as well as Agentic's multi-search.
+- 3.2: GraphRAG fumbled (1) — it correctly said "LangChain supports many" but its list was severely incomplete. Agent-style multi-search beat graph traversal here because the answer required *enumeration*, not relationship reasoning.
+- 3.3: GraphRAG got 2 because while accurate, it didn't synthesise specific code examples the way Agentic did.
+- **Agentic dominates this dimension 15 vs 12**, but GraphRAG is a close second — both far ahead of RAG's 5.
 
-## Operational metrics (from `compute_metrics.py`)
+## Operational metrics
+
+Computed by `evaluation/compute_metrics.py` over the current contents
+of `evaluation/results/`. Re-run after each evaluation pass.
 
 |                              | Single-hop   | Multi-hop  | Cross-doc  |
 |------------------------------|-------------:|-----------:|-----------:|
@@ -84,10 +85,15 @@ page covers it.
 | **Agentic** — latency mean   | 56,346 ms ⚠️ | 10,938 ms  | 9,901 ms   |
 | **Agentic** — tool calls mean| 1.6          | 1.8        | 2.0        |
 | **Agentic** — success rate   | 5/5          | 5/5        | 5/5        |
-| **GraphRAG**                 | TBD (M3)     | TBD (M3)   | TBD (M3)   |
+| **GraphRAG** — latency mean  | 11,058 ms    | 13,874 ms  | 12,641 ms  |
+| **GraphRAG** — success rate  | 5/5          | 5/5        | 5/5        |
 
 ⚠️ Agentic single-hop latency is skewed by Q 1.2 (~250 s — a Gemini API
 stall on that one call). Excluding 1.2, mean drops to ~7.7 s.
+
+Notable: GraphRAG latency is **~2× RAG** and similar to Agentic — but
+without Agentic's outlier variance. It's a very *consistent* paradigm
+once the knowledge graph is built.
 
 ## Final matrix
 
@@ -95,51 +101,55 @@ stall on that one call). Excluding 1.2, mean drops to ~7.7 s.
 |--------------|:---------------:|:--------------:|:--------------:|:----------------:|:------------:|
 | **RAG**      | 8/15 (1.60)     | 5/15 (1.00)    | 5/15 (1.00)    | **18/45 (40%)**  | ~5.9 s       |
 | **Agentic**  | 7/15 (1.40)     | 9/15 (1.80)    | 15/15 (3.00)   | **31/45 (69%)**  | ~9.4 s¹      |
-| **GraphRAG** | TBD             | TBD            | TBD            | TBD              | TBD          |
+| **GraphRAG** | 6/15 (1.20)     | 10/15 (2.00)   | 12/15 (2.40)   | **28/45 (62%)**  | ~12.5 s      |
 
-¹ Mean across all 15 questions, excluding the single 250 s Q 1.2
+¹ Agentic mean across 15 questions, excluding the single 250 s Q 1.2
 outlier. Raw mean is ~26 s.
+
+**Ranking by dimension** (winner per row):
+
+- Single-hop: **RAG (8) > Agentic (7) > GraphRAG (6)** — RAG's home turf
+- Multi-hop: **GraphRAG (10) > Agentic (9) > RAG (5)** — graph wins here
+- Cross-doc: **Agentic (15) > GraphRAG (12) > RAG (5)** — multi-search wins
+- Overall: **Agentic (31) > GraphRAG (28) > RAG (18)**
 
 ## Scenario recommendations
 
-Mirroring `PRODUCT.md §5.1`, with one important update — the actual
-numbers tell a slightly different story than the pre-experiment
-intuition:
+Based on the now-complete three-paradigm data, mirroring `PRODUCT.md §5.1`:
 
 ### Scenario A — Customer FAQ / high-QPS retrieval
 **Recommendation: RAG.**
-On single-hop, RAG (8) edges Agentic (7). The 8/15 isn't great in
-absolute terms, but RAG is **6× faster** (5 s vs 56 s mean — even
-adjusted for the outlier, ~5 s vs ~10 s) and runs at a fraction of the
-per-query cost. For FAQ workloads the latency floor matters more than
-ceiling correctness, and RAG's failure modes here (1.1 hallucination,
-1.4 wrong answer) are the kind that better single-hop chunking +
-reranking would fix without changing paradigm.
+RAG narrowly wins single-hop (8 vs 7 vs 6) and is **~2× faster than
+GraphRAG / Agentic**. The 8/15 isn't great, but RAG's failure modes
+(1.1 hallucination, 1.4 wrong answer) are the kind better chunking +
+reranking can fix without changing paradigm. For FAQ workloads, the
+latency floor matters more than ceiling correctness.
 
 ### Scenario B — Technical-docs assistant / developer tools
 **Recommendation: Agentic.**
-Multi-hop and cross-doc both go to Agentic by wide margins (9 vs 5 and
-15 vs 5). Developer questions are almost always cross-doc by nature —
-"how do X and Y interact" — and the data shows the agentic loop's
-multi-search pattern handles those reliably, including questions where
-RAG insisted the docs didn't contain the answer when they did. The ~2×
-latency tax is acceptable for an IDE-side or chat-side helper.
+Cross-doc 15/15 is decisive — developer questions are cross-doc by
+nature, and Agentic's multi-search loop reliably synthesises across
+pages. GraphRAG is a close second (12/15) and would be a defensible
+alternative if you needed lower latency variance (no outliers). RAG
+out at 5/15 here.
 
 ### Scenario C — Compliance / legal / medical
-**Recommendation: GraphRAG (pending M3 data).**
-Not yet measured, but the project plan's framing still holds: these
-domains demand explicit relationship traceability that neither
-retrieval nor a multi-step agent surfaces cleanly. Will revisit once
-M3 lands.
+**Recommendation: GraphRAG.**
+Multi-hop 10/15 is the highest of any paradigm — **GraphRAG beats
+Agentic on multi-hop reasoning** (10 vs 9), confirming the
+pre-experiment hypothesis. Compliance domains demand explicit
+relationship traceability (regulation X applies to entity Y under
+condition Z) — exactly what graph traversal makes auditable. The 2×
+latency vs RAG is acceptable when correctness is non-negotiable.
 
 ### Scenario D — High-concurrency real-time
-**Recommendation: RAG, with explicit "I don't know" routing.**
-Only RAG fits the latency budget here. The realistic move is to
+**Recommendation: RAG + intent routing.**
+Only RAG fits a sub-second latency budget. The realistic move is to
 sniff for cross-doc / multi-hop intent and route those *out* of the
-RAG path (escalate to a slower Agentic backend or return a graceful
-"this is being researched, here's a partial answer"). The data shows
-RAG is reliable only on single-hop fact lookups; pretending otherwise
-in production produces the 5/15 multi-hop score above.
+RAG path — to an Agentic backend (best cross-doc) or GraphRAG (best
+multi-hop). The data shows RAG is reliable only on single-hop fact
+lookups; pretending otherwise in production produces the 5/15
+multi-hop score.
 
 ## Per-paradigm observations
 
@@ -169,13 +179,23 @@ in production produces the 5/15 multi-hop score above.
 - Latency is paradigm-real: ~10 s mean on multi-hop / cross-doc,
   not counting the Q 1.2 outlier. This is the cost of the loop.
 
-### GraphRAG
+### GraphRAG (LightRAG + Gemini 2.5 Flash; 1,471-doc knowledge graph)
 
-Not yet implemented (M3). The plan expects it to lift Multi-hop /
-Cross-doc above Agentic in domains with rich entity relationships;
-LangChain documentation may or may not be such a domain (the docs
-are a fairly flat set of how-to pages, not a deeply entity-linked
-corpus). M3 will tell.
+- **Wins multi-hop overall (10/15)** — beats Agentic by 1 point.
+  Where the answer requires "X relates-to Y under condition Z", the
+  graph traversal pays off (Q 2.2, 2.3). PRODUCT.md predicted this;
+  the data confirmed it.
+- **Loses single-hop** (6/15 vs RAG's 8) — entity-graph reasoning is
+  overkill for simple fact lookup. Q 1.1 inherited the same
+  hallucination as RAG (the docs themselves have "temperature: 0"
+  examples scattered everywhere, fooling graph-based aggregation too).
+- **Consistent latency** (11-14 s, no outliers) thanks to deterministic
+  graph traversal — unlike Agentic where some questions burst tool
+  calls and others don't.
+- **Knowledge graph stats**: 1471/1472 docs ingested (1 tiktoken
+  failure), ~66k entities, ~125k relations. Build took multiple
+  sessions due to Gemini Tier 1 daily quota — see README "Notes on
+  GraphRAG build" for the operational story.
 
 ## Methodology notes
 

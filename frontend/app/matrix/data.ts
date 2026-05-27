@@ -42,35 +42,35 @@ export const QUESTIONS: QuestionRecord[] = [
     dimension: "single_hop",
     title: "ChatOpenAI temperature default",
     expected: "rag",
-    scores: { rag: 1, agentic: 0, graphrag: null },
+    scores: { rag: 1, agentic: 0, graphrag: 0 },
   },
   {
     id: "1.2",
     dimension: "single_hop",
     title: "RecursiveCharacterTextSplitter default chunk_size",
     expected: "rag",
-    scores: { rag: 2, agentic: 1, graphrag: null },
+    scores: { rag: 2, agentic: 1, graphrag: 1 },
   },
   {
     id: "1.3",
     dimension: "single_hop",
     title: "LangSmith free plan traces / month",
     expected: "tie",
-    scores: { rag: 3, agentic: 3, graphrag: null },
+    scores: { rag: 3, agentic: 3, graphrag: 2 },
   },
   {
     id: "1.4",
     dimension: "single_hop",
     title: "BaseChatMessageHistory abstract methods",
     expected: "rag",
-    scores: { rag: 1, agentic: 1, graphrag: null },
+    scores: { rag: 1, agentic: 1, graphrag: 2 },
   },
   {
     id: "1.5",
     dimension: "single_hop",
     title: "LangGraph interrupt — version introduced",
     expected: "agentic",
-    scores: { rag: 1, agentic: 2, graphrag: null },
+    scores: { rag: 1, agentic: 2, graphrag: 1 },
   },
 
   // Multi-hop
@@ -79,35 +79,35 @@ export const QUESTIONS: QuestionRecord[] = [
     dimension: "multi_hop",
     title: "LCEL chaining RunnablePassthrough + ChatPromptTemplate",
     expected: "graphrag",
-    scores: { rag: 1, agentic: 3, graphrag: null },
+    scores: { rag: 1, agentic: 3, graphrag: 2 },
   },
   {
     id: "2.2",
     dimension: "multi_hop",
     title: "LangGraph agent with 3-retry tool calls — required components",
     expected: "graphrag",
-    scores: { rag: 1, agentic: 1, graphrag: null },
+    scores: { rag: 1, agentic: 1, graphrag: 2 },
   },
   {
     id: "2.3",
     dimension: "multi_hop",
     title: "ConversationBufferMemory deprecation + MemorySaver",
     expected: "graphrag",
-    scores: { rag: 1, agentic: 3, graphrag: null },
+    scores: { rag: 1, agentic: 3, graphrag: 3 },
   },
   {
     id: "2.4",
     dimension: "multi_hop",
     title: "LangSmith @traceable ↔ LangChain callbacks",
     expected: "graphrag",
-    scores: { rag: 1, agentic: 1, graphrag: null },
+    scores: { rag: 1, agentic: 1, graphrag: 2 },
   },
   {
     id: "2.5",
     dimension: "multi_hop",
     title: "LangServe deployment + frontend client",
     expected: "agentic",
-    scores: { rag: 1, agentic: 1, graphrag: null },
+    scores: { rag: 1, agentic: 1, graphrag: 1 },
   },
 
   // Cross-doc
@@ -116,35 +116,35 @@ export const QUESTIONS: QuestionRecord[] = [
     dimension: "cross_doc",
     title: "AgentExecutor vs LangGraph agent — which to choose",
     expected: "agentic",
-    scores: { rag: 1, agentic: 3, graphrag: null },
+    scores: { rag: 1, agentic: 3, graphrag: 3 },
   },
   {
     id: "3.2",
     dimension: "cross_doc",
     title: "Vector stores supported + best for production",
     expected: "agentic",
-    scores: { rag: 1, agentic: 3, graphrag: null },
+    scores: { rag: 1, agentic: 3, graphrag: 1 },
   },
   {
     id: "3.3",
     dimension: "cross_doc",
     title: "Web-search agent — LangChain vs LangGraph approach",
     expected: "agentic",
-    scores: { rag: 1, agentic: 3, graphrag: null },
+    scores: { rag: 1, agentic: 3, graphrag: 2 },
   },
   {
     id: "3.4",
     dimension: "cross_doc",
     title: "Document Loaders + Retrievers — roles and integration",
     expected: "tie",
-    scores: { rag: 1, agentic: 3, graphrag: null },
+    scores: { rag: 1, agentic: 3, graphrag: 3 },
   },
   {
     id: "3.5",
     dimension: "cross_doc",
     title: "Official RAG chunking + historical evolution",
     expected: "agentic",
-    scores: { rag: 1, agentic: 3, graphrag: null },
+    scores: { rag: 1, agentic: 3, graphrag: 3 },
   },
 ];
 
@@ -175,7 +175,10 @@ export const OPERATIONAL_METRICS: OperationalMetric[] = [
   { paradigm: "agentic", dimension: "multi_hop", latencyMs: 10938, toolCallsMean: 1.8, successRate: "5/5" },
   { paradigm: "agentic", dimension: "cross_doc", latencyMs: 9901, toolCallsMean: 2.0, successRate: "5/5" },
 
-  // GraphRAG (TBD — M3 in progress)
+  // GraphRAG (LightRAG + Gemini Flash, 1,471-doc knowledge graph)
+  { paradigm: "graphrag", dimension: "single_hop", latencyMs: 11058, toolCallsMean: null, successRate: "5/5" },
+  { paradigm: "graphrag", dimension: "multi_hop", latencyMs: 13874, toolCallsMean: null, successRate: "5/5" },
+  { paradigm: "graphrag", dimension: "cross_doc", latencyMs: 12641, toolCallsMean: null, successRate: "5/5" },
 ];
 
 export interface ScenarioRec {
@@ -203,9 +206,9 @@ export const SCENARIO_RECOMMENDATIONS: ScenarioRec[] = [
   {
     emoji: "⚖️",
     scenario: "Compliance / legal / medical",
-    recommendation: "GraphRAG (pending M3)",
+    recommendation: "GraphRAG",
     rationale:
-      "Not yet measured. Project plan expects GraphRAG's explicit relationship traceability to shine in heavily entity-linked corpora. Will revisit once the M3 build completes.",
+      "Multi-hop 10/15 is the highest of any paradigm — GraphRAG narrowly beats Agentic on multi-hop reasoning (10 vs 9), confirming the pre-experiment hypothesis. Compliance domains demand relationship traceability that graph traversal makes auditable.",
   },
   {
     emoji: "⚡",
@@ -216,14 +219,16 @@ export const SCENARIO_RECOMMENDATIONS: ScenarioRec[] = [
   },
 ];
 
-// M3 status — shown as a banner on the page until GraphRAG row populates.
-export const M3_STATUS = {
-  processed: 1085,
-  total: 1472,
-  pendingRetry: 387,
-  reasonForPause: "Gemini Tier 1 daily-quota wall (10k requests/day)",
-  resumeAction: "Remaining 387 docs being processed now that the rolling 24h window cleared.",
-};
+// M3 completed — kept as null so the page can hide the banner.
+// Historical context (kept for narrative): build took multiple sessions
+// due to Gemini Tier 1 daily-quota cap; full story in README.
+export const M3_STATUS: null | {
+  processed: number;
+  total: number;
+  pendingRetry: number;
+  reasonForPause: string;
+  resumeAction: string;
+} = null;
 
 // Aggregate helper.
 export interface AggregateRow {

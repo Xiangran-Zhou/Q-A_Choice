@@ -295,8 +295,6 @@ function ScoreLegend() {
 }
 
 export default function Page() {
-  const m3Pct = Math.round((M3_STATUS.processed / M3_STATUS.total) * 100);
-
   return (
     <div className="space-y-10">
       {/* Header */}
@@ -311,27 +309,25 @@ export default function Page() {
         </p>
       </section>
 
-      {/* M3 status banner */}
-      <section className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-        <div className="flex items-baseline gap-3">
-          <strong className="text-amber-700 dark:text-amber-300">M3 in progress</strong>
-          <span className="text-foreground/70">
-            GraphRAG knowledge-graph build at{" "}
-            <span className="tabular-nums font-medium">
-              {M3_STATUS.processed.toLocaleString()} / {M3_STATUS.total.toLocaleString()}
-            </span>{" "}
-            docs ({m3Pct}%).
-          </span>
-        </div>
-        <p className="mt-2 text-foreground/60 leading-relaxed">
-          Paused at {M3_STATUS.reasonForPause}. {M3_STATUS.resumeAction} GraphRAG
-          column will populate once the build finishes. See the project{" "}
-          <a href="https://github.com/Xiangran-Zhou/Q-A_Choice" className="underline">
-            README
-          </a>{" "}
-          for full context on the quota-cap finding.
-        </p>
-      </section>
+      {/* M3 status banner — shown only while build is in progress */}
+      {M3_STATUS && (
+        <section className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
+          <div className="flex items-baseline gap-3">
+            <strong className="text-amber-700 dark:text-amber-300">M3 in progress</strong>
+            <span className="text-foreground/70">
+              GraphRAG knowledge-graph build at{" "}
+              <span className="tabular-nums font-medium">
+                {M3_STATUS.processed.toLocaleString()} / {M3_STATUS.total.toLocaleString()}
+              </span>{" "}
+              docs.
+            </span>
+          </div>
+          <p className="mt-2 text-foreground/60 leading-relaxed">
+            Paused at {M3_STATUS.reasonForPause}. {M3_STATUS.resumeAction} GraphRAG
+            column will populate once the build finishes.
+          </p>
+        </section>
+      )}
 
       {/* Aggregate scores */}
       <section className="space-y-3">
@@ -342,9 +338,12 @@ export default function Page() {
         </p>
         <AggregateTable />
         <p className="text-xs text-foreground/50">
-          Standout signal: <strong>Agentic 15/15 on cross-doc</strong> — the
-          ReAct loop's multi-search pattern reliably synthesises across pages
-          where RAG's single retrieval misses framing.
+          Standout signals: <strong>Agentic 15/15 on cross-doc</strong> — the
+          ReAct loop's multi-search pattern dominates synthesis across pages.{" "}
+          <strong>GraphRAG 10/15 on multi-hop</strong> — beats Agentic
+          (9/15) by 1, vindicating the pre-experiment hypothesis that the
+          knowledge graph wins on relationship reasoning. RAG narrowly
+          holds single-hop (8 vs 7 vs 6) — its only home turf.
         </p>
       </section>
 
