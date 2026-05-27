@@ -45,22 +45,30 @@ export default function CompareGrid() {
     paradigm: "agentic",
     status: "idle",
   });
+  const [graphrag, setGraphrag] = useState<ColumnState>({
+    paradigm: "graphrag",
+    status: "idle",
+  });
 
   async function handleSubmit(e?: React.FormEvent) {
     e?.preventDefault();
     const q = question.trim();
     if (!q) return;
-    if (rag.status === "loading" || agentic.status === "loading") return;
+    if (
+      rag.status === "loading" ||
+      agentic.status === "loading" ||
+      graphrag.status === "loading"
+    )
+      return;
 
     setSubmitted(q);
     setRag({ paradigm: "rag", status: "loading" });
     setAgentic({ paradigm: "agentic", status: "loading" });
+    setGraphrag({ paradigm: "graphrag", status: "loading" });
 
-    // Fire both in parallel — that's the whole point of this page.
+    // Fire all three in parallel — that's the whole point of this page.
     queryParadigm("rag", q)
-      .then((r) =>
-        setRag({ paradigm: "rag", status: "done", response: r }),
-      )
+      .then((r) => setRag({ paradigm: "rag", status: "done", response: r }))
       .catch((err) =>
         setRag({
           paradigm: "rag",
@@ -71,11 +79,7 @@ export default function CompareGrid() {
 
     queryParadigm("agentic", q)
       .then((r) =>
-        setAgentic({
-          paradigm: "agentic",
-          status: "done",
-          response: r,
-        }),
+        setAgentic({ paradigm: "agentic", status: "done", response: r }),
       )
       .catch((err) =>
         setAgentic({
@@ -84,9 +88,24 @@ export default function CompareGrid() {
           error: toBackendError(err),
         }),
       );
+
+    queryParadigm("graphrag", q)
+      .then((r) =>
+        setGraphrag({ paradigm: "graphrag", status: "done", response: r }),
+      )
+      .catch((err) =>
+        setGraphrag({
+          paradigm: "graphrag",
+          status: "error",
+          error: toBackendError(err),
+        }),
+      );
   }
 
-  const isLoading = rag.status === "loading" || agentic.status === "loading";
+  const isLoading =
+    rag.status === "loading" ||
+    agentic.status === "loading" ||
+    graphrag.status === "loading";
 
   return (
     <div className="space-y-6">
@@ -147,8 +166,7 @@ export default function CompareGrid() {
         <ParadigmColumn
           title="GraphRAG"
           tagline="Knowledge graph + multi-hop"
-          state={{ paradigm: "graphrag", status: "idle" }}
-          pendingNote="Knowledge-graph build still running for M3. This column will join the comparison once the LightRAG store is complete."
+          state={graphrag}
         />
       </div>
     </div>
