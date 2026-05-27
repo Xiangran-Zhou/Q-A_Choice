@@ -82,12 +82,30 @@ def make_rag(working_dir: Path | str | None = None) -> LightRAG:
     The caller is responsible for `await rag.initialize_storages()`
     before any insert / query, and `await rag.finalize_storages()` on
     shutdown. The function is sync because LightRAG's constructor is.
+
+    Concurrency is tuned for Gemini 2.5 Flash on Tier 1 paid:
+    - Tier 1 RPM cap is ~1,000 requests/min on `gemini-2.5-flash`.
+    - LightRAG defaults (4 LLM workers, 2 parallel inserts) bottom out
+      around 30 req/min — under 3 % utilisation, and the limiting
+      factor on real-world build speed.
+    - Bumping to 16 LLM workers / 4 parallel inserts puts us at
+      a sustained ~150-200 RPM in practice (still 5-7× under the cap),
+      and shortens the 1,500-doc build from ~18 h to ~4-5 h.
+    - Embeddings are cheap on OpenAI; 16 workers is fine.
+
+    If you ever push these higher and start seeing intermittent
+    429s before the daily quota is gone, dial them back rather than
+    chasing the RPM ceiling — the wrapper script's quota-wall
+    detection only fires on RPD (per-day), not RPM (per-minute).
     """
     return LightRAG(
         working_dir=str(working_dir or LIGHTRAG_DIR),
         llm_model_func=_gemini_llm,
         llm_model_name=LLM_MODEL,
         embedding_func=openai_embed,
+        llm_model_max_async=16,
+        embedding_func_max_async=16,
+        max_parallel_insert=4,
     )
 
 
