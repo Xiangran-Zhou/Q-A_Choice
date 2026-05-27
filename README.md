@@ -2,7 +2,7 @@
 
 A side-by-side comparison of three AI document-Q&A paradigms — **traditional RAG**, **Agentic Search**, and **GraphRAG** — answering the same questions against the same corpus, so the trade-offs are visible instead of hand-waved.
 
-> **Status:** 🚧 M1 + M2 complete — RAG and Agentic both wired and scored across all three dimensions. See the [decision matrix](./evaluation/decision_matrix.md). GraphRAG (M3) is next.
+> **Status:** ✅ M1–M3 complete. All three paradigms (RAG, Agentic, GraphRAG) wired and scored across single-hop / multi-hop / cross-doc dimensions. **Agentic 31/45, GraphRAG 28/45, RAG 18/45**. Full breakdown in the [decision matrix](./evaluation/decision_matrix.md).
 
 ## Why
 
@@ -87,10 +87,10 @@ generator.
 
 ## Milestone progress
 
-- [x] **M1** — Infrastructure + RAG baseline (`rag_graph` runs end-to-end against all 5 single-hop questions; LLM-as-judge score 8/15)
-- [x] **M2** — Agentic search (`agentic_graph` with two retrieval tools; full 3-dimension coverage; LLM-as-judge score 31/45 vs RAG's 18/45 — see [decision matrix](./evaluation/decision_matrix.md))
-- [ ] **M3** — GraphRAG (knowledge-graph build, `graphrag_graph`, full 15-question coverage)
-- [ ] **M4** — Decision matrix finalization + demo rehearsal (matrix scaffold + scenario recommendations are in place; awaiting M3 numbers)
+- [x] **M1** — Infrastructure + RAG baseline (`rag_graph`, 8/15 single-hop, full 3-dim coverage)
+- [x] **M2** — Agentic search (`agentic_graph` with two retrieval tools, 31/45 overall — best across paradigms)
+- [x] **M3** — GraphRAG (LightRAG knowledge graph: ~66k entities, ~125k relations across 1,471 docs; 28/45 overall; **beats Agentic 10/15 vs 9/15 on multi-hop** — see [decision matrix](./evaluation/decision_matrix.md))
+- [x] **M4** — Decision matrix finalised + frontend visualisation at `/matrix`; scenario recommendations grounded in the actual judged scores
 
 ## Getting started
 
