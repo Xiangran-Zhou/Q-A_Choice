@@ -229,7 +229,7 @@ Scored audit trails write to `evaluation/results/scored_*.json` (committed to th
 
 ## Acknowledgements
 
-- Agentic Search architecture inspired by [`langchain-ai/chat-langchain`](https://github.com/langchain-ai/chat-langchain) (full agent loop reimplemented; chat-langchain's current `master` uses a private Mintlify API that requires unobtainable credentials — see `PLAN.md` §4.2 in the project history for the discovery).
+- Agentic Search architecture inspired by [`langchain-ai/chat-langchain`](https://github.com/langchain-ai/chat-langchain). The agent loop is reimplemented locally: chat-langchain's current `master` queries Mintlify's documentation search API via `MINTLIFY_API_URL` + `MINTLIFY_API_KEY` env vars — a private contract between langchain-ai and Mintlify that isn't publicly available. This project rebuilds the equivalent functionality with two locally-implemented tools (`search_docs_vector` against our own Chroma + BM25 hybrid index, and `read_doc_file` against the `.mdx` corpus), so anyone can clone and run it without obtaining private credentials.
 - GraphRAG implementation: [`HKUDS/LightRAG`](https://github.com/HKUDS/LightRAG).
 - Evaluation corpus: the public [LangChain documentation](https://python.langchain.com/) via the [`langchain-ai/docs`](https://github.com/langchain-ai/docs) repository.
 
