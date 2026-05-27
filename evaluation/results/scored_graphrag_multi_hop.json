@@ -1,0 +1,124 @@
+{
+  "paradigm": "graphrag",
+  "dimension": "multi_hop",
+  "run_at": "2026-05-27T04:13:52.308938+00:00",
+  "model": "gemini-2.5-flash",
+  "embedding_model": "text-embedding-3-small",
+  "n_questions": 5,
+  "n_succeeded": 5,
+  "n_failed": 0,
+  "results": [
+    {
+      "id": "2.1",
+      "dimension": "multi_hop",
+      "question_zh": "用 LCEL 把 RunnablePassthrough 和 ChatPromptTemplate 串起来需要注意什么？",
+      "question_en": "What should I know when chaining RunnablePassthrough with ChatPromptTemplate via LCEL?",
+      "expected_winner": "graphrag",
+      "source_hint": "LCEL + RunnablePassthrough + ChatPromptTemplate docs",
+      "is_demo_star": false,
+      "answer": "When chaining `RunnablePassthrough` with `ChatPromptTemplate` via LangChain Expression Language (LCEL), you should understand their respective roles in composing complex workflows.\n\n**ChatPromptTemplate**\nA `ChatPromptTemplate` is a fundamental component in LangChain designed to create and structure chat prompts from an ordered array of messages, such as system and human messages. It allows for the inclusion of placeholders for dynamic content, enabling a structured approach to prompt engineering. This template defines both the structure and content of the prompts for use in LangChain applications [1, 5]. For instance, a `ChatPromptTemplate` can define system instructions and user input with placeholders like `{context}` and `{question}` [1, 4].\n\n**RunnablePassthrough with ChatPromptTemplate via LCEL**\n`RunnablePassthrough` is utilized in LCEL chains to pass along inputs or to assign new values based on existing inputs. When chained with a `ChatPromptTemplate`, `RunnablePassthrough.assign` can prepare or transform the input data before it reaches the prompt template [1].\n\nIn a typical LCEL chain involving these components:\n*   **Input Preparation:** An initial dictionary of inputs is processed. `RunnablePassthrough.assign` can take these inputs and create new keys or modify existing ones. For example, it might generate an `imap_query` or fetch `context` from a retriever based on the initial `question` [1].\n*   **Prompt Generation:** The output from `RunnablePassthrough.assign` (which now contains all necessary variables like `context` and `question`) is then passed as input to the `ChatPromptTemplate`. The `ChatPromptTemplate` uses these variables to fill its placeholders and construct a complete, formatted chat prompt [1, 4].\n*   **Further Chaining:** This structured prompt can then be passed to an LLM for generation, followed by an output parser (e.g., `StrOutputParser`) [1, 4].\n\nThe use of `RunnablePassthrough.assign` ensures that the `ChatPromptTemplate` receives all the necessary dynamic content (like `context` or `question`) it needs to generate a complete prompt, allowing for flexible and dynamic prompt construction within an LCEL chain [1].\n\n### References\n\n*   [1] Document Chunks\n*   [2] Prompt (LCEL Object)\n*   [3] LCEL (LangChain Expression Language)\n*   [4] ChatPromptTemplate\n*   [5] ChatPromptTemplate (Class)",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 26613,
+      "judge": {
+        "score": 2,
+        "reasoning": "The answer is technically correct and provides a good explanation of how and why to chain RunnablePassthrough with a ChatPromptTemplate. However, it fails to cite any verifiable source documentation paths, instead listing generic titles like \"Document Chunks\", which prevents full verification and a perfect score.",
+        "verified_sources": [],
+        "elapsed_ms": 17181
+      }
+    },
+    {
+      "id": "2.2",
+      "dimension": "multi_hop",
+      "question_zh": "我想用 LangGraph 实现一个 agent，让它在调用工具失败时自动重试 3 次，需要哪些组件配合？",
+      "question_en": "I want to build a LangGraph agent that automatically retries 3 times when tool calls fail. What components do I need?",
+      "expected_winner": "graphrag",
+      "source_hint": "LangGraph + ToolNode + RetryPolicy + error handling",
+      "is_demo_star": true,
+      "answer": "To build a LangGraph agent that automatically retries tool calls three times when they fail, you will primarily need to leverage LangGraph's built-in fault tolerance mechanisms, specifically its retry policies for nodes [1].\n\nHere are the key components and steps:\n\n*   **LangGraph Agent Structure**: Your agent will be built using the LangGraph framework, which allows you to define a workflow as a graph of interconnected nodes [1].\n*   **Nodes for Tool Calls**: Any operation involving a tool call within your agent's workflow should be defined as a node in your LangGraph [1, 7]. For executing multiple tools in LangGraph workflows, a prebuilt node called `ToolNode` can be used, which also handles error handling automatically [7].\n*   **Retry Policy**: LangGraph allows you to configure a `RetryPolicy` for individual nodes. This policy automatically re-runs failed attempts based on the exception type and backoff settings [1, 9].\n*   **Configuring `max_attempts`**: When adding a node to your graph, you pass the `retry_policy` parameter to the `add_node()` method. To retry three times, you would set the `max_attempts` parameter of the `RetryPolicy` object to `3`. This parameter specifies the maximum number of attempts, including the initial one [1, 9].\n\nFor example, when defining a node, you would configure it as follows (in Python):\n\n```python\nfrom langgraph.types import RetryPolicy\n\nbuilder.add_node(\n    \"tool_call_node\",\n    your_tool_calling_function,\n    retry_policy=RetryPolicy(max_attempts=3),\n)\n```\n\nBy default, the retry policy will attempt to retry on most exceptions, including `NodeTimeoutError`, but excludes common programming errors like `ValueError` or `TypeError` [1]. You can also customize the exceptions that trigger a retry [1].\n\n### References\n\n*   [1] Fault tolerance\n*   [2] LangGraph overview\n*   [3] Test\n*   [4] LangChain Tools\n*   [5] Configurable chat models\n*   [6] Security policy\n*   [7] Messages view integrations\n*   [8] MLflow integrations\n*   [9] Add retry policies\n*   [10] Thinking in LangGraph",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 9386,
+      "judge": {
+        "score": 2,
+        "reasoning": "The answer correctly identifies the main components (ToolNode, RetryPolicy) but makes a small error. The user asked for 3 retries, which requires `max_attempts=4`, not 3 as the answer suggests, since `max_attempts` includes the initial call.",
+        "verified_sources": [],
+        "elapsed_ms": 17271
+      }
+    },
+    {
+      "id": "2.3",
+      "dimension": "multi_hop",
+      "question_zh": "ConversationBufferMemory 已经被废弃了，对应的新方案是什么？它和 LangGraph 的 MemorySaver 有什么关系？",
+      "question_en": "ConversationBufferMemory is deprecated. What replaces it, and how does it relate to LangGraph's MemorySaver?",
+      "expected_winner": "graphrag",
+      "source_hint": "Memory deprecation + new approach + LangGraph Memory",
+      "is_demo_star": false,
+      "answer": "In LangGraph, the management of short-term memory, including conversation history, is handled through **checkpointers** that persist the agent's state. While the provided context does not explicitly state that `ConversationBufferMemory` is deprecated, it highlights checkpointers as the mechanism for persisting conversation memory in LangGraph.\n\n**Replacement for ConversationBufferMemory in LangGraph:**\n\nFor handling conversation history and short-term memory within LangGraph, you should use a **checkpointer**. Checkpointers manage the agent's state, which typically includes the conversation history, enabling multi-turn conversations and allowing the thread to be resumed at any point [1, 2, 3, 4, 5].\n\n**Relationship to LangGraph's MemorySaver:**\n\n`MemorySaver` is a specific type of checkpointer used in LangGraph (specifically in JavaScript environments) for saving and restoring the agent's state in memory [1, 2, 4]. It serves an analogous function to `InMemorySaver` in Python. When you compile a LangGraph graph, you can configure it with a `MemorySaver` (or other checkpointer) to enable thread-level persistence for your agent [1, 2, 4, 5].\n\nKey aspects of this approach include:\n\n*   **Short-term memory management:** LangGraph manages short-term memory, such as conversation history, as part of the agent's state. This state is persisted using a checkpointer [2, 4].\n*   **Persistence:** The checkpointer ensures that the state is saved to a database (or memory for `MemorySaver`) so that conversations can be resumed across sessions [2, 4].\n*   **Thread-scoped:** Short-term memory is typically thread-scoped, meaning it tracks interactions within a single conversation session [2, 4].\n*   **Production use:** For production environments, it is recommended to use database-backed checkpointers like `PostgresSaver` or `MongoDBSaver` instead of in-memory savers for robust persistence [1, 4].\n\nThe Memory Store component in LangGraph further allows for long-term memory that can be shared across conversational threads and sessions, distinguishing it from the thread-scoped short-term memory handled by checkpointers [2, 4, 6].\n\n### References\n\n- [1] Memory\n- [2] Memory overview\n- [3] Gradio integration\n- [4] Short-term memory\n- [5] Using in LangGraph\n- [6] Memory store",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 11117,
+      "judge": {
+        "score": 3,
+        "reasoning": "The answer correctly identifies that checkpointers are the replacement for older memory classes within the LangGraph framework. It accurately describes the role of MemorySaver as a specific type of in-memory checkpointer and correctly notes its name varies between the Python and JS libraries. The explanation is complete and factually correct.",
+        "verified_sources": [],
+        "elapsed_ms": 23278
+      }
+    },
+    {
+      "id": "2.4",
+      "dimension": "multi_hop",
+      "question_zh": "LangSmith 的 @traceable 装饰器和 LangChain 的 callbacks 系统是什么关系？",
+      "question_en": "What is the relationship between LangSmith's @traceable decorator and LangChain's callbacks system?",
+      "expected_winner": "graphrag",
+      "source_hint": "LangSmith tracing + LangChain callbacks",
+      "is_demo_star": false,
+      "answer": "LangSmith's `@traceable` decorator and LangChain's callback system both facilitate tracing, and they are designed to work together, especially within the LangChain ecosystem.\n\nHere's how they relate:\n\n1.  **`@traceable` Decorator for Application-Level Tracing**: The `@traceable` decorator from the LangSmith SDK is a recommended approach for instrumenting Python and JavaScript/TypeScript functions to enable application-level tracing in LangSmith. It allows for precise control over which functions are traced, what inputs and outputs are logged, and how the trace hierarchy is structured. When `LANGSMITH_TRACING=true` is set, functions wrapped with `@traceable` automatically generate runs in LangSmith, capturing their arguments as inputs and return values as outputs.\n\n2.  **LangChain's Callback System**: LangChain itself uses a callback system (e.g., `LangChainTracer` instances) to log traces. You can enable tracing for LangChain applications either by setting environment variables like `LANGSMITH_TRACING=true` or programmatically by passing a `LangChainTracer` instance as a callback to specific invocations. This provides granular control over which parts of a LangChain application are traced.\n\n3.  **Interoperability and Nested Tracing**:\n    *   **LangChain within `@traceable`**: LangChain objects, when invoked within a `@traceable` function, are automatically traced and become child runs of that `@traceable` function. They inherit the tracing context, including the client, tags, metadata, and project name from the parent `@traceable` function. This allows for a unified trace of both custom application logic (defined by `@traceable`) and LangChain-specific operations.\n    *   **JS/TS Specifics**: For LangChain.js versions 0.2.x and later, LangChain objects used inside `@traceable` functions are automatically traced. For older versions, a `LangChainTracer` instance needs to be manually created from the tracing context of `@traceable` and passed to the LangChain invocation.\n\nIn essence, `@traceable` provides a higher-level, declarative way to instrument functions for tracing, and LangChain is built to seamlessly integrate with this mechanism, allowing its internal components to report their activities as part of a larger, `@traceable`-defined operation.\n\n### References\n\n*   [1] Custom instrumentation\n*   [2] Trace LiteLLM applications\n*   [3] Trace LangChain applications (Python and JS/TS)\n*   [4] Philosophy\n*   [5] Run types",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 9821,
+      "judge": {
+        "score": 2,
+        "reasoning": "The answer correctly explains the core relationship: `@traceable` creates a parent trace, and LangChain's callback-based tracing automatically creates nested child traces within it. However, I was unable to locate the specific source documents to verify finer details like the LangChain.js version number mentioned, so the answer is not fully verifiable.",
+        "verified_sources": [],
+        "elapsed_ms": 28773
+      }
+    },
+    {
+      "id": "2.5",
+      "dimension": "multi_hop",
+      "question_zh": "我用 LangServe 部署了一个 chain，前端能不能直接调用？需要做什么配置？",
+      "question_en": "I deployed a chain with LangServe. Can the frontend call it directly? What configuration is needed?",
+      "expected_winner": "agentic",
+      "source_hint": "LangServe + deployment + client examples",
+      "is_demo_star": false,
+      "answer": "Yes, a frontend can directly call a chain deployed with LangServe. LangServe is an open-source library specifically designed for serving LangChain applications, and model servers expose their APIs via LangServe [1]. These LangChain applications, when served, provide a unified API that supports functions such as `invoke` and `stream` for interaction [2].\n\nHowever, the provided context does not detail the specific frontend configuration needed to make these calls, beyond the general understanding that a frontend would interact with an exposed API endpoint.\n\n### References\n\n- [1] LangServe\n- [2] LangChain API",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 12432,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer correctly states that a frontend can call a LangServe endpoint. However, it fails to answer the second part of the question about necessary configuration, incorrectly claiming the information is not in the context. The most critical configuration, CORS, is a key part of the LangServe documentation and is completely omitted.",
+        "verified_sources": [],
+        "elapsed_ms": 24680
+      }
+    }
+  ],
+  "scored_at": "2026-05-27T04:21:53Z",
+  "judge_model": "gemini-2.5-pro"
+}

@@ -1,0 +1,124 @@
+{
+  "paradigm": "graphrag",
+  "dimension": "cross_doc",
+  "run_at": "2026-05-27T04:14:57.901832+00:00",
+  "model": "gemini-2.5-flash",
+  "embedding_model": "text-embedding-3-small",
+  "n_questions": 5,
+  "n_succeeded": 5,
+  "n_failed": 0,
+  "results": [
+    {
+      "id": "3.1",
+      "dimension": "cross_doc",
+      "question_zh": "AgentExecutor（旧）和 LangGraph 的 agent（新）在功能上有什么差异？我应该选哪个？",
+      "question_en": "What are the differences between AgentExecutor (legacy) and LangGraph's agent (new)? Which should I choose?",
+      "expected_winner": "agentic",
+      "source_hint": "Legacy AgentExecutor + LangGraph agents + migration guide",
+      "is_demo_star": true,
+      "answer": "LangGraph agents and LangChain's `AgentExecutor` serve distinct purposes within the ecosystem of intelligent software agents, with LangGraph offering a more advanced and controllable framework.\n\n### AgentExecutor (Legacy)\n\nThe `AgentExecutor` is a foundational component within the LangChain framework designed for executing and managing agents. It acts as a runtime environment that orchestrates an agent's workflow by integrating it with a defined set of tools and, in some contexts, Large Language Models (LLMs) [3]. Originating as a class from `@langchain/classic/agents`, it efficiently runs agents and manages their interactions with associated tools [3, 5]. `AgentExecutor` is suitable for more straightforward chains and retrieval flows, providing a standard interface for interacting with models and other components [1].\n\n### LangGraph Agent (New)\n\nLangGraph agents are a specialized type of intelligent software agent built upon the LangGraph framework, which provides a more low-level and controllable orchestration framework compared to traditional LangChain agents [1, 11]. Key characteristics and capabilities of LangGraph agents include:\n\n*   **Stateful Orchestration**: They are inherently stateful, designed for long-running operations with robust and comprehensive state management. Every state change automatically creates checkpoints, which is crucial for controlling and debugging execution and enabling \"time travel\" capabilities [11].\n*   **Deeper Customization**: LangGraph offers an expressive framework for handling complex, bespoke tasks unique to a company's needs, without restricting users to a single black-box cognitive architecture [1, 8]. This allows for the implementation of specific logic or workflows with a high degree of control [11].\n*   **Advanced Capabilities**: LangGraph agents support features like interrupts for human review of actions during execution [4, 9, 11], and can be connected and rendered to frontends for real-time visualization of multi-step graph execution [4, 11]. They can also leverage LangChain's auto-streaming capabilities for chat models [6, 11].\n*   **Deployment and Testing**: LangGraph agents can be deployed through LangSmith Deployment, where each end-to-end invocation is considered a Deployment Run [7, 9, 11]. The framework also provides patterns for adding unit tests, allowing individual nodes within an agent to be tested [3].\n*   **LLM Flexibility**: LangGraph is ambivalent to the underlying LLMs, meaning it works with any LLMs, including open-source models (OSS LLMs) and those that do not natively support tool calling. In such cases, a bit of logic can convert raw LLM string responses into actionable decisions [1].\n*   **Open Source**: LangGraph is an MIT-licensed open-source library and is free to use [1].\n\n### Which to Choose?\n\nThe choice between `AgentExecutor` and LangGraph agents depends on the complexity and specific requirements of your application:\n\n*   **Choose `AgentExecutor` (LangChain Agents)** if you are building simple, generic tasks, or straightforward chains and retrieval flows where a standard interface and less granular control are acceptable.\n*   **Choose LangGraph Agents** if you need to build complex agentic systems with custom logic, requiring fine-grained control over workflow execution, robust state management, human-in-the-loop interactions, streaming capabilities, and deep customization. LangGraph is particularly well-suited for long-running, stateful applications and offers greater flexibility for unique and sophisticated use cases.\n\n### References\n\n*   [1] Do I need to use LangChain to use LangGraph? what's the difference?\n*   [2] Exa search integration\n*   [3] Test\n*   [4] Overview\n*   [5] Searxng search integration\n*   [6] Amazon Bedrock AgentCore Memory\n*   [7] LangSmith Deployment billing\n*   [8] Build a custom SQL agent\n*   [9] What is a Deployment Run?\n*   [10] Cohere integrations\n*   [11] LangGraph Agent",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 26857,
+      "judge": {
+        "score": 3,
+        "reasoning": "The answer correctly identifies the key differences between AgentExecutor and LangGraph, accurately describes the features of each, and provides clear guidance on when to use which. The information is comprehensive, well-structured, and factually correct.",
+        "verified_sources": [],
+        "elapsed_ms": 15853
+      }
+    },
+    {
+      "id": "3.2",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 支持哪些向量数据库？哪个最适合生产环境？",
+      "question_en": "What vector databases does LangChain support? Which is best for production?",
+      "expected_winner": "agentic",
+      "source_hint": "integrations/vectorstores (multiple pages)",
+      "is_demo_star": false,
+      "answer": "LangChain integrates with a wide variety of vector stores, offering support for numerous options across both its Python and JavaScript/TypeScript (LangChain.js) libraries.\n\n**Supported Vector Stores by LangChain:**\n\nLangChain (Python) supports integrations with:\n*   **Teradata Vector Store**: Designed for efficient storage, indexing, and searching of high-dimensional vector embeddings within an enterprise data platform, seamlessly integrating with LangChain for RAG applications. It allows easy expansion of the knowledge base without rebuilding from scratch and runs on Teradata, enabling data addition from existing tables, data warehouses, or real-time feeds.\n*   **IBM Db2 Vector Store**: Provides vector storage and search capabilities for IBM relational database Db2 version v12.1.2 and above, featuring vector similarity search, max marginal relevance search with metadata filtering, and support for dot product, cosine, and Euclidean distance metrics.\n*   **Oracle Database Vector Stores (`OracleVS`)**: A module for implementing Oracle Database vector stores, supporting hybrid search, keyword search (via Oracle Text), and semantic search.\n*   **LambdaDB Vector Store**: A serverless AI database for scalable RAG and agent applications, offering similarity search with scores and filtering options.\n*   **ZeusDB**: A high-performance vector database offering product quantization, persistent storage, and advanced search features.\n*   **Vectara**: Utilizes its own embeddings for document indexing and querying, optimized for performance and accuracy, consuming Vectara's core Indexing and Search APIs.\n*   **CockroachDB**: Offers native vector support (v24.2+) and C-SPANN distributed indexes (v25.2+), advanced metadata filtering, multi-tenancy, and horizontal scalability.\n*   **LangChain Azure PostgreSQL**: Provides vector store functionality and filter components, supporting various operators for metadata filtering.\n*   **FAISS**: An in-memory vector store example used with `SpiceDBRetriever`.\n*   **Chroma**: Another vector store compatible with `SpiceDBRetriever`.\n*   **In-Memory Vector Store**: Used for testing and examples.\n*   **AI21 Contextual Answers Model**: Can be used with vector databases.\n\nLangChain.js (JavaScript/TypeScript) offers an extensive array of integrations, including:\n*   **Vectara**\n*   **PGVectorStore** (also known as PGVector)\n*   **Supabase Postgres**\n*   **Cloudflare Vectorize**\n*   **Convex**: Supports vector store functionality and standard similarity search.\n*   **libSQL** (or remote Turso databases): Provides an API for interaction.\n*   **MongoDB Atlas**\n*   **Pinecone**\n*   **Redis**\n*   **Qdrant**\n*   **Oracle AI Database**\n*   **Weaviate**\n*   **Astra DB**\n*   **Azion EdgeSQL**\n*   **Azure AI Search**\n*   **Azure DocumentDB**\n*   **Azure Cosmos DB for NoSQL**\n*   **CloseVector**\n*   **Couchbase Query**\n*   **Couchbase Search**\n*   **Elasticsearch**\n*   **Google Cloud SQL for PostgreSQL**\n*   **Google Vertex AI Matching Engine**\n*   **SAP HANA Cloud Vector Engine**\n*   **HNSWLib**\n*   **MariaDB**\n*   **Milvus**\n*   **Neo4j Vector Index**\n*   **Neon Postgres**: A fully managed serverless PostgreSQL database with the `pgvector` extension.\n\n**Best for Production:**\n\nThe provided context highlights several vector stores with features beneficial for enterprise and production environments. For example, **TeradataVectorStore** emphasizes its enterprise advantage, running on Teradata's existing infrastructure for easy data integration and scalability for RAG applications [1, 7]. **CockroachDB** is noted for its distributed SQL capabilities, native vector support, C-SPANN indexes, and high availability, making it suitable for persistent, distributed chat applications and fault-tolerant LangGraph workflows [10]. **LambdaDB** is described as a \"serverless AI database for building scalable RAG and agent applications\" [5]. However, the context does not explicitly name one single \"best\" vector database for production, as the optimal choice often depends on specific use cases, existing infrastructure, and performance requirements.\n\n### References\n\n- [1] Teradata integrations\n- [2] IBM db2 vector store and vector search integration\n- [3] Oracle AI Database integrations\n- [4] CockroachDB integrations\n- [5] LambdaDB\n- [6] Cloudflare vectorize integration\n- [7] ZeusDB integrations\n- [8] LangChain.js\n- [9] Convex integration\n- [10] LangChain",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 8742,
+      "judge": {
+        "score": 1,
+        "reasoning": "The answer correctly states that LangChain supports many vector databases, but the list provided for Python is severely incomplete, omitting many of the most popular and long-standing integrations like Pinecone, Weaviate, Qdrant, and Milvus. The answer is therefore misleading. Additionally, the provided citations are not verifiable source file paths.",
+        "verified_sources": [],
+        "elapsed_ms": 14744
+      }
+    },
+    {
+      "id": "3.3",
+      "dimension": "cross_doc",
+      "question_zh": "我想做一个能联网搜索的 agent，LangChain 和 LangGraph 各自怎么做？哪个更好？",
+      "question_en": "I want to build an agent that searches the web. How does LangChain vs LangGraph approach this? Which is better?",
+      "expected_winner": "agentic",
+      "source_hint": "LangChain agents + LangGraph + Tavily/Serper integrations",
+      "is_demo_star": false,
+      "answer": "Both LangChain and LangGraph offer robust frameworks for building agents capable of web searching, but they approach the task with different levels of abstraction and control.\n\n### LangChain's Approach to Web-Searching Agents\n\nLangChain functions as an agent framework that provides abstractions and integrations for models, tools, and agent loops. It offers a prebuilt agent architecture designed to facilitate quick development of common Large Language Model (LLM) and tool-calling applications. When building a web-searching agent with LangChain, you would typically use the `create_agent` function, configuring it with a language model and a list of predefined tools. These tools extend the agent's capabilities, allowing it to interact with external systems like web search engines.\n\nExamples of web search tools that can be integrated with LangChain agents include:\n*   **NimbleSearchTool**: This tool provides real-time web search capabilities, supporting features like deep mode for full content extraction, domain/date filtering, and optional AI-generated summaries.\n*   **ApifyActorsTool**: Allows agents to utilize Apify Actors for web scraping and data extraction tasks.\n*   **SearxngSearch**: Connects agents to the internet for meta-search engine queries, particularly useful for current events.\n*   **TavilySearchResults (Internet Search)**: Often used in ReAct agents for general internet searching.\n*   **You.com search tools (`youSearch`, `youResearch`, `youContents`)**: These are available for LangChain.js agents for web search and content extraction.\n\nLangChain aims to simplify the initial setup and allow for rapid prototyping of agent applications without needing deep knowledge of the underlying orchestration.\n\n### LangGraph's Approach to Web-Searching Agents\n\nLangGraph is a low-level orchestration framework and runtime primarily focused on building, managing, and deploying long-running, stateful agents. It provides fine-grained control over the agent's workflow, emphasizing durable execution, streaming, human-in-the-loop capabilities, and persistence. While LangGraph itself is low-level and does not abstract prompts or architecture, it serves as a powerful foundation upon which more complex agent behaviors can be built. In fact, LangChain's higher-level agent abstractions, particularly since LangChain 1.0, are built on top of LangGraph.\n\nWhen building a web-searching agent with LangGraph, you leverage its graph-based structure to define the precise flow and state transitions. This allows for intricate workflows that can combine deterministic steps with agentic decision-making. Tools like `NimbleSearchTool` and `ApifyActorsTool` can still be utilized, often by creating a LangChain agent (using `create_agent`) with these tools and then orchestrating that agent within a LangGraph `StateGraph`. This approach provides the flexibility to manage internal state, loop through actions, and incorporate human intervention points, all while utilizing powerful external tools.\n\n### Which is Better?\n\nThe choice between LangChain and LangGraph depends on your specific needs:\n\n*   **Choose LangChain for:**\n    *   **Quick Start and Simplicity:** If you need to rapidly build agents for straightforward applications or want a higher-level abstraction with prebuilt architectures for common LLM and tool-calling loops.\n    *   **Standard Abstractions:** If you prefer standard interfaces for models, tools, and agent loops without needing to manage the intricate workflow logic yourself.\n\n*   **Choose LangGraph for:**\n    *   **Low-Level Control and Complexity:** If you require fine-grained, low-level control over agent orchestration, especially for complex, long-running, and stateful workflows.\n    *   **Durable Execution and Persistence:** For agents that need to persist through failures, run for extended periods, or maintain state across multiple interactions.\n    *   **Advanced Workflows:** If your application involves combining deterministic steps with dynamic agentic decision-making, conditional branching, or multi-agent communication.\n\nIn essence, LangChain offers an easy-to-use framework for getting started quickly with agent development, while LangGraph provides the underlying infrastructure and control necessary for building highly sophisticated, resilient, and customized agent systems. For many advanced use cases, the best approach might be to use LangChain's agent abstractions *on top of* LangGraph's orchestration runtime, combining the ease of use with powerful low-level control.\n\n### References\n\n*   [1] LangGraph overview\n*   [2] Frameworks, runtimes, and harnesses\n*   [3] LangChain overview\n*   [4] Nimble Search\n*   [5] Apify actor integration\n*   [6] Searxng search integration\n*   [7] You.com search tools\n*   [8] LangSmith Observability",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 12146,
+      "judge": {
+        "score": 2,
+        "reasoning": "The answer is factually correct and provides an excellent, comprehensive comparison between the two libraries. However, it does not cite any verifiable source document paths, which is a requirement for a perfect score.",
+        "verified_sources": [],
+        "elapsed_ms": 18718
+      }
+    },
+    {
+      "id": "3.4",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 的 Document Loaders 和 Retrievers 各自能做什么？它们怎么配合？",
+      "question_en": "What do LangChain's Document Loaders and Retrievers each do? How do they work together?",
+      "expected_winner": "tie",
+      "source_hint": "Document loaders + Retrievers modules",
+      "is_demo_star": true,
+      "answer": "LangChain's Document Loaders and Retrievers are distinct but complementary components essential for building applications that leverage external knowledge, particularly in Retrieval-Augmented Generation (RAG) workflows.\n\n### Document Loaders\n\nDocument loaders are specialized tools or software components designed to ingest data or content from a wide array of document formats and external sources into LangChain's standardized `Document` format [1, 2]. They provide a consistent interface for reading data from various sources such as Slack, Notion, Google Drive, PDFs, and web pages, ensuring that the information can be handled uniformly regardless of its origin [1, 2, 4].\n\nAll document loaders implement the `BaseLoader` interface and share a common API, typically including `load()` to load all documents at once and `lazy_load()` to stream documents efficiently, especially for large datasets [1, 4]. Examples of document loaders include `CSVLoader` for common file types, `RecursiveUrlLoader` for web crawling, `LangSmithLoader` for loading from LangSmith datasets, `OracleDocLoader` for Oracle AI Vector Search tables, `BoxLoader` for Box files, `CheerioWebBaseLoader` for lightweight webpage parsing, `DoclingLoader` for various document types (PDF, DOCX, PPTX, HTML), `SingleStoreLoader` for SingleStore database tables, `OutlineLoader` for Outline collections, `WebPDFLoader` for web-based PDFs, and `MintbaseDocumentLoader` for NFTs on the Near Blockchain [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].\n\n### Retrievers\n\nRetrievers are interfaces within LangChain that return documents based on an unstructured query [2]. Their primary role is to fetch relevant external knowledge at query time, which is fundamental to Retrieval-Augmented Generation (RAG) [2]. Retrievers address the limitations of Large Language Models (LLMs), such as their finite context window and static training data, by providing up-to-date and context-specific information [2]. Examples include `BoxRetriever` and the `as_retriever` method available on vector stores [5, 11].\n\n### How Document Loaders and Retrievers Work Together\n\nDocument loaders and retrievers are integral parts of a typical retrieval workflow, forming the foundation of a knowledge base for RAG applications [2]. The process generally flows as follows:\n\n1.  **Ingestion with Document Loaders:** Data from various sources (e.g., Google Drive, Slack, Notion) is first ingested by document loaders, which convert this raw input into standardized `Document` objects [2].\n2.  **Processing:** These `Document` objects are then typically split into smaller chunks, transformed into numerical representations called embeddings, and stored in a vector database (vector store) [2].\n3.  **Retrieval with Retrievers:** When a user poses a query, an embedding is created for that query. A retriever then uses this query embedding to search the vector store and fetch the most relevant `Document` chunks [2, 11].\n4.  **Generation:** The retrieved information is subsequently supplied as context to an LLM, which uses it to generate a grounded, context-aware answer [2, 11].\n\nThis modular architecture allows developers to easily swap out different loaders, splitters, embedding models, vector stores, or retrievers without needing to rewrite the application's core logic [2].\n\n### References\n\n*   [1] Document loader integrations\n*   [2] Retrieval\n*   [3] LangSmithLoader integration\n*   [4] Document loader integrations\n*   [5] Box integration\n*   [6] Cheerio integration\n*   [7] Docling integration\n*   [8] SingleStoreLoader integration\n*   [9] Outline integration\n*   [10] Near blockchain integration\n*   [11] ZeusDB vector store integration",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 9010,
+      "judge": {
+        "score": 3,
+        "reasoning": "The answer is fully correct, complete, and well-structured. It accurately defines both Document Loaders and Retrievers, provides correct examples, and clearly explains how they work together in a typical RAG pipeline.",
+        "verified_sources": [],
+        "elapsed_ms": 35766
+      }
+    },
+    {
+      "id": "3.5",
+      "dimension": "cross_doc",
+      "question_zh": "LangChain 官方教程里构建 RAG 应用推荐哪种 chunking 策略？这个推荐随时间变过吗？",
+      "question_en": "What chunking strategy does the official LangChain tutorial recommend for RAG? Has this recommendation evolved over time?",
+      "expected_winner": "agentic",
+      "source_hint": "RAG tutorials + chunking strategy + historical versions",
+      "is_demo_star": false,
+      "answer": "For Retrieval Augmented Generation (RAG) applications, the official LangChain tutorial recommends using the `RecursiveCharacterTextSplitter`. This text splitter recursively divides documents using common separators like new lines until each resulting chunk reaches the appropriate size. It is highlighted as the recommended text splitter for generic text use cases within the LangChain ecosystem [1]. An example of its use in a RAG application setup involves `RecursiveCharacterTextSplitter.from_tiktoken_encoder` to split documents into chunks [1].\n\nRegarding whether this recommendation has evolved over time, the provided information does not explicitly state a change in the recommendation for generic text. However, LangChain offers specialized text splitters for different document structures. For instance, `MarkdownHeaderTextSplitter` is available to split markdown files based on specified headers, allowing content to be grouped or split by common headers. Even within markdown groups, other text splitters like `RecursiveCharacterTextSplitter` can be applied for further control over chunk size [2]. This indicates a diversification of tools to handle various document formats effectively, rather than a shift away from `RecursiveCharacterTextSplitter` for its intended generic use case.\n\n### References\n\n- [1] Evaluate a RAG application\n- [2] Split markdown - text splitter integration",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 6450,
+      "judge": {
+        "score": 3,
+        "reasoning": "The candidate answer is fully correct. It accurately identifies `RecursiveCharacterTextSplitter` as the recommended general-purpose chunking strategy. It also correctly addresses the nuance of the question about evolution by noting the existence of specialized splitters for different data types, which represents a diversification of options rather than a fundamental change in the core recommendation.",
+        "verified_sources": [],
+        "elapsed_ms": 16275
+      }
+    }
+  ],
+  "scored_at": "2026-05-27T04:23:36Z",
+  "judge_model": "gemini-2.5-pro"
+}

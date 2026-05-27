@@ -1,0 +1,124 @@
+{
+  "paradigm": "graphrag",
+  "dimension": "single_hop",
+  "run_at": "2026-05-27T04:12:30.666186+00:00",
+  "model": "gemini-2.5-flash",
+  "embedding_model": "text-embedding-3-small",
+  "n_questions": 5,
+  "n_succeeded": 5,
+  "n_failed": 0,
+  "results": [
+    {
+      "id": "1.1",
+      "dimension": "single_hop",
+      "question_zh": "ChatOpenAI 的 temperature 参数默认值是多少？",
+      "question_en": "What is the default value of the temperature parameter in ChatOpenAI?",
+      "expected_winner": "rag",
+      "source_hint": "langchain-openai package reference",
+      "is_demo_star": false,
+      "answer": "The default value for the `temperature` parameter in ChatOpenAI instances is **0** [1, 2, 3, 4].\n\nThis parameter controls the randomness of the model's output; a lower value like 0 typically results in more focused, deterministic, and predictable responses [5, 6]. The configurable range for `temperature` in OpenAI, OpenAI Compatible Endpoints, and xAI models is generally between 0.0 and 2.0 [5].\n\n### References\n\n- [1] ChatOpenAI integration\n- [2] ChatOpenRouter integration\n- [3] ChatXAI integration\n- [4] Deep Agents Code\n- [5] OpenAI\n- [6] ChatContextual integration",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 26969,
+      "judge": {
+        "score": 0,
+        "reasoning": "The candidate answer incorrectly states the default temperature is 0. The actual default value for the temperature parameter in ChatOpenAI is 0.7.",
+        "verified_sources": [],
+        "elapsed_ms": 108686
+      }
+    },
+    {
+      "id": "1.2",
+      "dimension": "single_hop",
+      "question_zh": "RecursiveCharacterTextSplitter 的默认 chunk_size 是多少？",
+      "question_en": "What is the default chunk_size of RecursiveCharacterTextSplitter?",
+      "expected_winner": "rag",
+      "source_hint": "text_splitters reference",
+      "is_demo_star": false,
+      "answer": "The provided context does not explicitly state the default `chunk_size` for `RecursiveCharacterTextSplitter`. The examples show that `chunk_size` is a configurable parameter that is explicitly set during instantiation, with values such as 100, 500, 250, and 50 being used in various demonstrations. While the `RecursiveCharacterTextSplitter` allows for control over the `chunk_size`, a default value when this parameter is not specified is not mentioned in the given information.",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 6780,
+      "judge": {
+        "score": 1,
+        "reasoning": "The candidate correctly states the answer is not in the context it received, but it failed to find the relevant documentation. The default `chunk_size` is 4000, which is specified in the API reference for the class.",
+        "verified_sources": [],
+        "elapsed_ms": 16077
+      }
+    },
+    {
+      "id": "1.3",
+      "dimension": "single_hop",
+      "question_zh": "LangSmith 的免费 plan 每月有多少 traces 额度？",
+      "question_en": "How many traces does the LangSmith free plan include per month?",
+      "expected_winner": "tie",
+      "source_hint": "LangSmith pricing page",
+      "is_demo_star": true,
+      "answer": "When you first sign up for a LangSmith account, your personal organization is limited to 5,000 monthly traces. This applies to the Developer plan when no payment method is on file [2, 4, 8]. To continue sending traces after reaching this limit, you would need to upgrade to a Developer or Plus plan by adding a credit card [2].\n\n### References\n\n- [1] LangSmith Observability\n- [2] Frequently Asked Questions\n- [3] Manage billing in your account\n- [4] View usage\n- [5] Configure LangSmith for scale\n- [6] View trace counts across your organization\n- [7] Manage a trace\n- [8] Data Retention and Billing Options\n- [9] Deploy your app to cloud\n- [10] Discover errors and usage patterns with the Insights Agent\n- [11] Tracing quickstart\n- [12] Set up hierarchy",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 6113,
+      "judge": {
+        "score": 2,
+        "reasoning": "The answer is factually correct about the 5,000 trace limit for the free plan. However, it fails to cite the specific documentation file path, instead referencing document titles, which prevents full verification and a perfect score.",
+        "verified_sources": [],
+        "elapsed_ms": 65329
+      }
+    },
+    {
+      "id": "1.4",
+      "dimension": "single_hop",
+      "question_zh": "BaseChatMessageHistory 类有哪些必须实现的抽象方法？",
+      "question_en": "What abstract methods must be implemented when subclassing BaseChatMessageHistory?",
+      "expected_winner": "rag",
+      "source_hint": "core/chat_history reference",
+      "is_demo_star": false,
+      "answer": "I do not have enough information to answer your question about the abstract methods that must be implemented when subclassing `BaseChatMessageHistory`. The provided context discusses `BaseChatModel` and various memory management techniques, but it does not detail the specific abstract methods of `BaseChatMessageHistory`.",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 4684,
+      "judge": {
+        "score": 2,
+        "reasoning": "The candidate correctly stated that the provided context was insufficient to answer the question. After multiple attempts, I was also unable to locate the specific documentation file for `BaseChatMessageHistory`'s abstract methods, suggesting the information is either missing from the corpus or not easily findable. The candidate's honest admission of a knowledge gap is preferable to hallucination.",
+        "verified_sources": [],
+        "elapsed_ms": 44854
+      }
+    },
+    {
+      "id": "1.5",
+      "dimension": "single_hop",
+      "question_zh": "LangGraph 的 interrupt 函数在哪个版本引入？",
+      "question_en": "In which version of LangGraph was the interrupt function introduced?",
+      "expected_winner": "agentic",
+      "source_hint": "LangGraph changelog + interrupt docs",
+      "is_demo_star": true,
+      "answer": "The `interrupt` function and related features, specifically typed interrupts, were introduced or significantly changed in LangGraph v1. The \"LangGraph v1 migration guide\" highlights \"Typed interrupts supported via `interrupts` config\" as a key change in this version, contrasting it with a \"v0 (old)\" approach in its code examples [3].\n\nAdditionally, the functional API for LangGraph supports human-in-the-loop workflows using the `interrupt` function and the `Command` primitive, with the function being imported from `langgraph.func` [5].\n\n### References\n\n- [1] LangGraph v1 migration guide\n- [2] Human-in-the-loop\n- [3] Versioning",
+      "retrieved_sources": [
+        "lightrag://hybrid-context"
+      ],
+      "retrieved_count": 1,
+      "tool_calls": [],
+      "latency_ms": 10742,
+      "judge": {
+        "score": 1,
+        "reasoning": "The candidate's answer is based on a misinterpretation of the available information. While it correctly notes that there were changes to interrupts in v1 (as part of the migration), it incorrectly implies this might have been their introduction. The feature was actually introduced earlier, in v0. The answer is therefore misleading and fails to correctly answer the user's specific question.",
+        "verified_sources": [],
+        "elapsed_ms": 53974
+      }
+    }
+  ],
+  "scored_at": "2026-05-27T04:20:00Z",
+  "judge_model": "gemini-2.5-pro"
+}

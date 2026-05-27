@@ -52,27 +52,55 @@ class State(TypedDict):
     answer: str
 
 
-async def _aquery_lightrag(question: str) -> tuple[str, str]:
-    """Run a hybrid LightRAG query.
+# Module-level singleton: one LightRAG instance + one event loop, reused
+# across every query in this process. Calling `initialize_storages()` and
+# `finalize_storages()` per query (the old pattern) left LightRAG's
+# internal state stuck after the first call — every subsequent query
+# returned None for `only_need_context=True` and an empty answer for the
+# real query. One-time init avoids that lifecycle entirely.
+#
+# The loop is pinned because LightRAG's async tasks bind to the event
+# loop that created them; running queries via `asyncio.run()` would spin
+# up a fresh loop each time and detach them.
+_rag_instance: object | None = None
+_rag_loop: asyncio.AbstractEventLoop | None = None
+
+
+def _get_rag_and_loop():
+    """Lazy-init the singleton LightRAG instance + its event loop."""
+    global _rag_instance, _rag_loop
+    if _rag_instance is None or _rag_loop is None:
+        _rag_loop = asyncio.new_event_loop()
+        _rag_instance = make_rag()
+        _rag_loop.run_until_complete(_rag_instance.initialize_storages())
+    return _rag_instance, _rag_loop
+
+
+async def _aquery_lightrag(rag, question: str) -> tuple[str, str]:
+    """Run a hybrid LightRAG query using the shared singleton rag.
 
     Returns `(answer, context)` — the generated answer and the raw
     context block (entities + relations + chunks) LightRAG retrieved.
-    Two API calls so we can surface both to the caller.
+
+    Wraps each `aquery` call defensively so a single edge-case failure
+    on one question doesn't crash the whole eval batch; the runner
+    will record an empty answer / context, which is honest data.
     """
-    rag = make_rag()
-    await rag.initialize_storages()
     try:
         context = await rag.aquery(
             question,
             param=QueryParam(mode="hybrid", top_k=5, only_need_context=True),
         )
+    except Exception:
+        context = ""
+    try:
         answer = await rag.aquery(
             question,
             param=QueryParam(mode="hybrid", top_k=5),
         )
-    finally:
-        await rag.finalize_storages()
-    return answer, context
+    except Exception as exc:
+        answer = f"[graphrag_graph error: {exc}]"
+    return (answer or ""), (context or "")
 
 
 def _graphrag_node(state: State) -> dict:
@@ -86,16 +114,19 @@ def _graphrag_node(state: State) -> dict:
             "retrieved_chunks": [],
         }
 
-    answer, context = asyncio.run(_aquery_lightrag(state["question"]))
-    # Wrap the retrieved context as a single Document so the evaluation
-    # runner can dedup "sources" like it does for RAG; the metadata
-    # source tag distinguishes graph-derived context from doc chunks.
-    chunks = [
-        Document(
-            page_content=context,
-            metadata={"source": "lightrag://hybrid-context"},
+    rag, loop = _get_rag_and_loop()
+    answer, context = loop.run_until_complete(
+        _aquery_lightrag(rag, state["question"])
+    )
+
+    chunks: list[Document] = []
+    if context:  # only build a chunk Document if we got real context text
+        chunks.append(
+            Document(
+                page_content=context,
+                metadata={"source": "lightrag://hybrid-context"},
+            )
         )
-    ]
     return {"answer": answer, "retrieved_chunks": chunks}
 
 
